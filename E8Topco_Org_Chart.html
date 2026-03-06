@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E8Topco Organization Chart</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+    color: #e2e8f0;
+    min-height: 100vh;
+    overflow-x: auto;
+  }
+
+  .header {
+    text-align: center;
+    padding: 40px 20px 20px;
+    background: linear-gradient(180deg, rgba(59,130,246,0.12) 0%, transparent 100%);
+  }
+  .header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #60a5fa, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+  }
+  .header .subtitle {
+    font-size: 13px;
+    color: #64748b;
+    margin-top: 6px;
+    font-weight: 400;
+  }
+
+  .legend {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    padding: 12px 20px 24px;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: #94a3b8;
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .chart-container {
+    padding: 0 30px 60px;
+    overflow-x: auto;
+  }
+
+  /* Tree layout */
+  .tree { width: max-content; margin: 0 auto; }
+
+  .tree ul {
+    padding-top: 20px;
+    position: relative;
+    transition: all 0.3s;
+    display: flex;
+    justify-content: center;
+    list-style: none;
+  }
+
+  .tree li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    padding: 20px 6px 0;
+  }
+
+  /* Connector lines */
+  .tree li::before, .tree li::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    border-top: 2px solid #334155;
+    width: 50%;
+    height: 20px;
+  }
+  .tree li::before { right: 50%; border-right: 2px solid #334155; }
+  .tree li::after { left: 50%; border-left: 2px solid #334155; }
+  .tree li:only-child::before, .tree li:only-child::after { display: none; }
+  .tree li:only-child { padding-top: 0; }
+  .tree li:first-child::before, .tree li:last-child::after { border: 0 none; }
+  .tree li:last-child::before { border-radius: 0 5px 0 0; }
+  .tree li:first-child::after { border-radius: 5px 0 0 0; }
+
+  .tree ul ul::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    border-left: 2px solid #334155;
+    width: 0;
+    height: 20px;
+  }
+
+  /* Card styles */
+  .card {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 12px;
+    padding: 12px 16px;
+    min-width: 140px;
+    max-width: 180px;
+    text-align: center;
+    cursor: default;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(10px);
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+  }
+
+  .card .name {
+    font-weight: 600;
+    font-size: 12.5px;
+    line-height: 1.3;
+    color: #f1f5f9;
+  }
+  .card .title {
+    font-size: 10px;
+    font-weight: 500;
+    margin-top: 3px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.08);
+    color: #94a3b8;
+  }
+
+  /* CEO card */
+  .ceo {
+    background: linear-gradient(135deg, #1e3a5f, #1a365d);
+    border-color: #3b82f6;
+    box-shadow: 0 0 20px rgba(59,130,246,0.2);
+    min-width: 200px;
+    padding: 16px 24px;
+  }
+  .ceo .name { font-size: 16px; color: #fff; }
+  .ceo .title { font-size: 12px; background: rgba(59,130,246,0.25); color: #93c5fd; }
+
+  /* C-suite */
+  .csuite {
+    background: linear-gradient(135deg, #1e293b, #253347);
+    border-color: #6366f1;
+    box-shadow: 0 0 15px rgba(99,102,241,0.15);
+    min-width: 160px;
+  }
+  .csuite .name { font-size: 13px; }
+  .csuite .title { background: rgba(99,102,241,0.2); color: #a5b4fc; }
+
+  /* VP level */
+  .vp {
+    background: linear-gradient(135deg, #1a2332, #1e2d3d);
+    border-color: #8b5cf6;
+    box-shadow: 0 0 10px rgba(139,92,246,0.1);
+    min-width: 150px;
+  }
+  .vp .title { background: rgba(139,92,246,0.15); color: #c4b5fd; }
+
+  /* Department colors */
+  .dept-finance { background: linear-gradient(135deg, #1a2636, #1a3040); border-color: #0ea5e9; }
+  .dept-finance .title { background: rgba(14,165,233,0.15); color: #7dd3fc; }
+
+  .dept-ops { background: linear-gradient(135deg, #1a2e26, #1a3530); border-color: #10b981; }
+  .dept-ops .title { background: rgba(16,185,129,0.15); color: #6ee7b7; }
+
+  .dept-tech { background: linear-gradient(135deg, #2a1a36, #301a3a); border-color: #a855f7; }
+  .dept-tech .title { background: rgba(168,85,247,0.15); color: #d8b4fe; }
+
+  .dept-sales { background: linear-gradient(135deg, #2e2a1a, #35301a); border-color: #f59e0b; }
+  .dept-sales .title { background: rgba(245,158,11,0.15); color: #fcd34d; }
+
+  .dept-support { background: linear-gradient(135deg, #2e1a1a, #351a1a); border-color: #ef4444; }
+  .dept-support .title { background: rgba(239,68,68,0.15); color: #fca5a5; }
+
+  .dept-marketing { background: linear-gradient(135deg, #1a2e2e, #1a3535); border-color: #14b8a6; }
+  .dept-marketing .title { background: rgba(20,184,166,0.15); color: #5eead4; }
+
+  .dept-field { background: linear-gradient(135deg, #1f2a1a, #253518); border-color: #84cc16; }
+  .dept-field .title { background: rgba(132,204,22,0.15); color: #bef264; }
+
+  /* Department head cards - larger */
+  .dept-head {
+    min-width: 155px;
+    padding: 14px 16px;
+  }
+  .dept-head .name { font-size: 12px; }
+
+  /* Collapsible sections */
+  .dept-section {
+    margin: 40px 20px;
+  }
+
+  .dept-section-title {
+    font-size: 18px;
+    font-weight: 600;
+    padding: 14px 24px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background 0.2s;
+  }
+  .dept-section-title:hover { filter: brightness(1.1); }
+  .dept-section-title .toggle { font-size: 14px; transition: transform 0.3s; }
+  .dept-section-title .toggle.collapsed { transform: rotate(-90deg); }
+  .fte-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 3px 12px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.08);
+    color: #e2e8f0;
+    margin-left: 12px;
+    white-space: nowrap;
+  }
+  .fte-badge .fte-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .dept-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    padding: 0 10px;
+  }
+
+  .team-card {
+    border-radius: 12px;
+    padding: 18px;
+    border: 1px solid rgba(255,255,255,0.06);
+    backdrop-filter: blur(10px);
+  }
+  .team-card h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #f1f5f9;
+  }
+  .team-card .role {
+    font-size: 11px;
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+  }
+  .team-card .members {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .team-card .member {
+    font-size: 12px;
+    color: #94a3b8;
+    padding: 3px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .team-card .member:last-child { border-bottom: none; }
+
+  .team-card.tc-finance { background: linear-gradient(135deg, #0c1a2a, #0e2235); border-color: rgba(14,165,233,0.3); }
+  .team-card.tc-finance .role { background: rgba(14,165,233,0.15); color: #7dd3fc; }
+  .team-card.tc-ops { background: linear-gradient(135deg, #0c1f1a, #0e2520); border-color: rgba(16,185,129,0.3); }
+  .team-card.tc-ops .role { background: rgba(16,185,129,0.15); color: #6ee7b7; }
+  .team-card.tc-tech { background: linear-gradient(135deg, #1a0c2a, #1e0e30); border-color: rgba(168,85,247,0.3); }
+  .team-card.tc-tech .role { background: rgba(168,85,247,0.15); color: #d8b4fe; }
+  .team-card.tc-sales { background: linear-gradient(135deg, #1f1a0c, #251e0e); border-color: rgba(245,158,11,0.3); }
+  .team-card.tc-sales .role { background: rgba(245,158,11,0.15); color: #fcd34d; }
+  .team-card.tc-support { background: linear-gradient(135deg, #1f0c0c, #250e0e); border-color: rgba(239,68,68,0.3); }
+  .team-card.tc-support .role { background: rgba(239,68,68,0.15); color: #fca5a5; }
+  .team-card.tc-marketing { background: linear-gradient(135deg, #0c1f1f, #0e2525); border-color: rgba(20,184,166,0.3); }
+  .team-card.tc-marketing .role { background: rgba(20,184,166,0.15); color: #5eead4; }
+  .team-card.tc-field { background: linear-gradient(135deg, #141f0c, #18250e); border-color: rgba(132,204,22,0.3); }
+  .team-card.tc-field .role { background: rgba(132,204,22,0.15); color: #bef264; }
+
+  /* Top-level tree */
+  .top-tree {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 20px;
+  }
+
+  .vline {
+    width: 2px;
+    height: 24px;
+    background: #334155;
+  }
+
+  .hgroup {
+    display: flex;
+    justify-content: center;
+    position: relative;
+    gap: 0;
+  }
+  .hgroup::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: calc(50% - var(--hw));
+    right: calc(50% - var(--hw));
+    height: 2px;
+    background: #334155;
+  }
+  .hgroup > .branch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 10px;
+  }
+  .hgroup > .branch > .vline-down {
+    width: 2px;
+    height: 20px;
+    background: #334155;
+  }
+
+  /* Responsive sections */
+  .executive-row {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    padding: 10px 0;
+  }
+
+  .exec-branch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .depts-row {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding: 10px 0;
+    position: relative;
+  }
+
+  .dept-branch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .connector-h {
+    height: 2px;
+    background: #334155;
+    align-self: stretch;
+    margin: 0 10px;
+  }
+
+  .dept-label {
+    font-size: 10px;
+    color: #64748b;
+    text-align: center;
+    max-width: 130px;
+    margin-bottom: 6px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* Section dividers */
+  .section-divider {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #334155, transparent);
+    margin: 40px 60px;
+  }
+
+  .stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    padding: 20px;
+    flex-wrap: wrap;
+  }
+  .stat {
+    text-align: center;
+  }
+  .stat .num {
+    font-size: 28px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #60a5fa, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .stat .label {
+    font-size: 11px;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 2px;
+  }
+
+  .print-note {
+    text-align: center;
+    padding: 20px;
+    font-size: 11px;
+    color: #475569;
+  }
+
+  @media print {
+    body { background: #fff; color: #1e293b; }
+    .card { border-color: #d1d5db; }
+    .card .name { color: #1e293b; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>E8Topco Organization</h1>
+  <div class="subtitle">WeLink &middot; Element8 &middot; AtLink &mdash; Draft of February 26, 2026</div>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div> Executive</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#0ea5e9"></div> Finance</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#a855f7"></div> Technology</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div> Operations</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div> Support</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#14b8a6"></div> Marketing</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> Sales</div>
+</div>
+
+<div class="stats-bar">
+  <div class="stat"><div class="num">151</div><div class="label">Total FTEs</div></div>
+  <div class="stat"><div class="num">15</div><div class="label">Departments</div></div>
+  <div class="stat"><div class="num">6</div><div class="label">C-Suite</div></div>
+  <div class="stat"><div class="num">3</div><div class="label">Brands</div></div>
+</div>
+
+<!-- FTE Summary Table -->
+<div style="max-width:720px; margin:0 auto 10px; padding:0 20px;">
+  <div style="border-radius:12px; border:1px solid rgba(255,255,255,0.08); overflow:hidden; backdrop-filter:blur(10px); background:linear-gradient(135deg, rgba(30,41,59,0.8), rgba(15,23,42,0.9));">
+    <table style="width:100%; border-collapse:collapse; font-size:12px;">
+      <thead>
+        <tr style="background:rgba(59,130,246,0.12);">
+          <th style="text-align:left; padding:12px 16px; color:#93c5fd; font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">Department</th>
+          <th style="text-align:right; padding:12px 16px; color:#93c5fd; font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">FTEs</th>
+          <th style="text-align:right; padding:12px 16px; color:#93c5fd; font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">% of Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+          <td style="padding:8px 16px; color:#a5b4fc;">Executive Leadership</td>
+          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">11</td>
+          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">7.3%</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+          <td style="padding:8px 16px; color:#7dd3fc;">Finance & Accounting</td>
+          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">8</td>
+          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">5.3%</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+          <td style="padding:8px 16px; color:#7dd3fc;">Billing & Collections</td>
+          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">4</td>
+          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">2.6%</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+          <td style="padding:8px 16px; color:#7dd3fc;">HR</td>
+          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">1</td>
+          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">0.7%</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+          <td style="padding:8px 16px; color:#d8b4fe;">IT & Core Network</td>
+          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">4</td>
+          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">2.6%</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+          <td style="padding:8px 16px; color:#d8b4fe;">NOC/WNET, Eng., Planning & ATS</td>
+          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">16</td>
+          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">10.6%</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+          <td style="padding:8px 16px; color:#d8b4fe;">R&D</td>
+          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">3</td>
+          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">2.0%</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+          <td style="padding:8px 16px; color:#6ee7b7;">Tower & Infrastructure Ops</td>
+          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">12</td>
+          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">7.9%</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+          <td style="padding:8px 16px; color:#6ee7b7;">Field Operations WeLink</td>
+          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">17</td>
+          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">11.3%</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+          <td style="padding:8px 16px; color:#6ee7b7;">Field Operations E8-AtLink</td>
+          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">15</td>
+          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">9.9%</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+          <td style="padding:8px 16px; color:#fca5a5;">Customer Support & Retention</td>
+          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">19</td>
+          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">12.6%</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+          <td style="padding:8px 16px; color:#6ee7b7;">Warehouse & Logistics</td>
+          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">8</td>
+          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">5.3%</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+          <td style="padding:8px 16px; color:#5eead4;">Marketing</td>
+          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">6</td>
+          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">4.0%</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+          <td style="padding:8px 16px; color:#fcd34d;">Inside Sales</td>
+          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">5</td>
+          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">3.3%</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+          <td style="padding:8px 16px; color:#fcd34d;">Field (D2D) Sales WeLink</td>
+          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">12</td>
+          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">7.9%</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+          <td style="padding:8px 16px; color:#fcd34d;">Field (D2D) Sales AtLink</td>
+          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">10</td>
+          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">6.6%</td>
+        </tr>
+        <tr style="background:rgba(59,130,246,0.08);">
+          <td style="padding:10px 16px; color:#f1f5f9; font-weight:700;">TOTAL (unique headcount)</td>
+          <td style="padding:10px 16px; text-align:right; color:#f1f5f9; font-weight:700; font-size:14px;">151</td>
+          <td style="padding:10px 16px; text-align:right; color:#f1f5f9; font-weight:700;">100%</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="padding:8px 16px 10px; font-size:10px; color:#64748b;">* Brittany Blackburn counted in Finance (also assists HR). Jeremy Gaddy counted in IT (also listed in NOC). Duplicates removed.</div>
+  </div>
+</div>
+
+<!-- ===== CEO ===== -->
+<div class="top-tree">
+  <div class="card ceo">
+    <div class="name">Samual Curtis</div>
+    <div class="title">Chief Executive Officer</div>
+  </div>
+
+  <div class="vline"></div>
+
+  <!-- CEO Direct Reports: CFO, COO, CTO, CIO, CRO -->
+  <div class="executive-row">
+    <div class="exec-branch">
+      <div class="card csuite">
+        <div class="name">Jason Pierce</div>
+        <div class="title">CFO</div>
+      </div>
+      <div class="vline"></div>
+      <div style="font-size:10px; color:#7dd3fc; text-transform:uppercase; letter-spacing:0.5px; padding:2px 0 6px;">Finance, Billing, HR</div>
+      <div class="fte-badge" style="margin-left:0;">13 <span class="fte-label">FTEs</span></div>
+    </div>
+
+    <div class="exec-branch">
+      <div class="card csuite" style="border-color:#10b981; box-shadow:0 0 15px rgba(16,185,129,0.15);">
+        <div class="name">Patrick Castleberry</div>
+        <div class="title" style="background:rgba(16,185,129,0.2); color:#6ee7b7;">COO</div>
+      </div>
+      <div class="vline"></div>
+      <!-- COO Direct Reports: Vice COOs -->
+      <div class="executive-row" style="gap:14px;">
+        <div class="exec-branch">
+          <div class="card vp">
+            <div class="name">Steve Naylor</div>
+            <div class="title">Vice COO, E8-AtLink</div>
+          </div>
+          <div style="font-size:9px; color:#6ee7b7; text-transform:uppercase; letter-spacing:0.5px; padding:4px 0 2px; text-align:center; max-width:160px;">Tower, Field Ops, CS, Warehouse (E8-AtLink)</div>
+        </div>
+        <div class="exec-branch">
+          <div class="card vp">
+            <div class="name">Stephen Vaca</div>
+            <div class="title">Vice COO, WeLink</div>
+          </div>
+          <div style="font-size:9px; color:#6ee7b7; text-transform:uppercase; letter-spacing:0.5px; padding:4px 0 2px; text-align:center; max-width:160px;">Tower, Field Ops, CS, Warehouse (WeLink)</div>
+        </div>
+      </div>
+      <div style="font-size:10px; color:#6ee7b7; padding:6px 0 2px;">Operations</div>
+      <div class="fte-badge" style="margin-left:0;">71 <span class="fte-label">FTEs</span></div>
+    </div>
+
+    <div class="exec-branch">
+      <div class="card csuite" style="border-color:#a855f7; box-shadow:0 0 15px rgba(168,85,247,0.15);">
+        <div class="name">Raj Veerappan</div>
+        <div class="title" style="background:rgba(168,85,247,0.2); color:#d8b4fe;">CTO</div>
+      </div>
+      <div class="vline"></div>
+      <div style="font-size:10px; color:#d8b4fe; text-transform:uppercase; letter-spacing:0.5px; padding:2px 0 6px;">IT, NOC, R&D</div>
+      <div class="fte-badge" style="margin-left:0;">23 <span class="fte-label">FTEs</span></div>
+    </div>
+
+    <div class="exec-branch">
+      <div class="card csuite" style="border-color:#a855f7; box-shadow:0 0 15px rgba(168,85,247,0.15);">
+        <div class="name">Jason Jensen</div>
+        <div class="title" style="background:rgba(168,85,247,0.2); color:#d8b4fe;">CIO</div>
+      </div>
+      <div class="vline"></div>
+      <div style="font-size:10px; color:#d8b4fe; text-transform:uppercase; letter-spacing:0.5px; padding:2px 0 6px;">Core Network</div>
+    </div>
+
+    <div class="exec-branch">
+      <div class="card csuite" style="border-color:#f59e0b; box-shadow:0 0 15px rgba(245,158,11,0.15);">
+        <div class="name">Dennis O'Connell</div>
+        <div class="title" style="background:rgba(245,158,11,0.2); color:#fcd34d;">CRO</div>
+      </div>
+      <div class="vline"></div>
+      <!-- CRO Direct Reports -->
+      <div class="executive-row" style="gap:10px;">
+        <div class="exec-branch">
+          <div class="card vp" style="min-width:130px;">
+            <div class="name">Mike Field</div>
+            <div class="title">VP, E8/AtLink Sales</div>
+          </div>
+        </div>
+        <div class="exec-branch">
+          <div class="card vp" style="min-width:130px;">
+            <div class="name">David Criswell</div>
+            <div class="title">VP, WeLink Sales</div>
+          </div>
+        </div>
+        <div class="exec-branch">
+          <div class="card vp" style="min-width:130px;">
+            <div class="name">Jonathan Van</div>
+            <div class="title">E8/AtLink JV Mgr</div>
+          </div>
+        </div>
+      </div>
+      <div style="font-size:10px; color:#fcd34d; padding:6px 0 2px;">Marketing & Sales</div>
+      <div class="fte-badge" style="margin-left:0;">33 <span class="fte-label">FTEs</span></div>
+    </div>
+  </div>
+</div>
+
+<hr class="section-divider">
+
+<!-- ===== DEPARTMENT SECTIONS ===== -->
+
+<!-- FINANCE & ACCOUNTING -->
+<div class="dept-section">
+  <div class="dept-section-title" style="background: linear-gradient(135deg, rgba(14,165,233,0.12), rgba(14,165,233,0.04));" onclick="toggleSection(this)">
+    <span class="toggle">&#9660;</span>
+    <span style="color:#7dd3fc;">Finance, Billing & HR</span>
+    <span class="fte-badge">13 <span class="fte-label">FTEs</span></span>
+    <span style="color:#64748b; font-size:12px; font-weight:400; margin-left:auto;">Reports to CFO &mdash; Jason Pierce</span>
+  </div>
+  <div class="dept-grid section-body">
+    <div class="team-card tc-finance">
+      <h3>Finance & Accounting &mdash; WeLink</h3>
+      <div class="role">Finance Team</div>
+      <div class="members">
+        <div class="member">James Hillstead</div>
+        <div class="member">Zayda Hepworth</div>
+        <div class="member">John Veloz</div>
+        <div class="member">Karli McDonnel</div>
+        <div class="member">Josh Orozco</div>
+      </div>
+    </div>
+    <div class="team-card tc-finance">
+      <h3>Finance & Accounting &mdash; AtLink</h3>
+      <div class="role">Finance Team</div>
+      <div class="members">
+        <div class="member">Brittany Blackburn</div>
+        <div class="member">Lila Crossfield</div>
+        <div class="member">Ben Aceves</div>
+      </div>
+    </div>
+    <div class="team-card tc-finance">
+      <h3>Billing & Collections &mdash; WeLink</h3>
+      <div class="role">Billing Team</div>
+      <div class="members">
+        <div class="member">Hailen Paukert</div>
+        <div class="member">Gabriela Medina</div>
+      </div>
+    </div>
+    <div class="team-card tc-finance">
+      <h3>Billing & Collections &mdash; E8/AtLink</h3>
+      <div class="role">Billing Team</div>
+      <div class="members">
+        <div class="member">Diana Bast</div>
+        <div class="member">Ashlyn Booth</div>
+      </div>
+    </div>
+    <div class="team-card tc-finance">
+      <h3>Human Resources</h3>
+      <div class="role">Director</div>
+      <div class="members">
+        <div class="member">Sheena LeMaster &mdash; Director</div>
+        <div class="member">Brittany Blackburn &mdash; E8-AtLink Asst.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TECHNOLOGY -->
+<div class="dept-section">
+  <div class="dept-section-title" style="background: linear-gradient(135deg, rgba(168,85,247,0.12), rgba(168,85,247,0.04));" onclick="toggleSection(this)">
+    <span class="toggle">&#9660;</span>
+    <span style="color:#d8b4fe;">Technology & Network</span>
+    <span class="fte-badge">23 <span class="fte-label">FTEs</span></span>
+    <span style="color:#64748b; font-size:12px; font-weight:400; margin-left:auto;">Reports to CTO &mdash; Raj Veerappan &amp; CIO &mdash; Jason Jensen (both report to CEO)</span>
+  </div>
+  <div class="dept-grid section-body">
+    <div class="team-card tc-tech">
+      <h3>IT & Core Network &mdash; WeLink</h3>
+      <div class="role">CIO: Jason Jensen</div>
+      <div class="members">
+        <div class="member">Jeff Hall</div>
+        <div class="member">Josh Falcon</div>
+      </div>
+    </div>
+    <div class="team-card tc-tech">
+      <h3>IT & Core Network &mdash; E8-AtLink</h3>
+      <div class="role">Network Team</div>
+      <div class="members">
+        <div class="member">Bob Hansen</div>
+        <div class="member">Jeremy Gaddy</div>
+      </div>
+    </div>
+    <div class="team-card tc-tech">
+      <h3>R&D</h3>
+      <div class="role">Director: Julius Žaromskis</div>
+      <div class="members">
+        <div class="member">Clinton Andrews</div>
+        <div class="member">Chris O'Toole</div>
+      </div>
+    </div>
+    <div class="team-card tc-tech">
+      <h3>NOC &mdash; WeLink</h3>
+      <div class="role">Director: Trevor Roundy</div>
+      <div class="members">
+        <div class="member">Chris Gruttke</div>
+        <div class="member">Kevin Brayton</div>
+        <div class="member">David Maack</div>
+        <div class="member">Adam Barter</div>
+        <div class="member">Ashley Juric</div>
+        <div class="member">Casey Plouffe</div>
+        <div class="member">Collin Ashaugh</div>
+        <div class="member">Astrid Perez</div>
+      </div>
+    </div>
+    <div class="team-card tc-tech">
+      <h3>NOC &mdash; E8-AtLink</h3>
+      <div class="role">Director: Josh Rudrow</div>
+      <div class="members">
+        <div class="member">Richard Adams</div>
+        <div class="member">Jeremy Gaddy</div>
+        <div class="member">Josh Schoenecker</div>
+        <div class="member">Chris Marshall</div>
+        <div class="member">Josh Bell</div>
+      </div>
+    </div>
+    <div class="team-card tc-tech">
+      <h3>Advanced Tech Support</h3>
+      <div class="role">ATS Team</div>
+      <div class="members">
+        <div class="member">Preston Bird</div>
+        <div class="member">Logan Cross</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OPERATIONS -->
+<div class="dept-section">
+  <div class="dept-section-title" style="background: linear-gradient(135deg, rgba(16,185,129,0.12), rgba(16,185,129,0.04));" onclick="toggleSection(this)">
+    <span class="toggle">&#9660;</span>
+    <span style="color:#6ee7b7;">Tower & Field Operations</span>
+    <span class="fte-badge">44 <span class="fte-label">FTEs</span></span>
+    <span style="color:#64748b; font-size:12px; font-weight:400; margin-left:auto;">Via Vice COOs (Naylor &amp; Vaca) &rarr; COO &mdash; Patrick Castleberry</span>
+  </div>
+  <div class="dept-grid section-body">
+    <div class="team-card tc-ops">
+      <h3>Tower & Infra Ops &mdash; WeLink</h3>
+      <div class="role">Director: Jason Hruban</div>
+      <div class="members">
+        <div class="member">Christopher Wilcox</div>
+        <div class="member">Chad Allred</div>
+      </div>
+    </div>
+    <div class="team-card tc-ops">
+      <h3>Tower Crew &mdash; WeLink</h3>
+      <div class="role">Leader: Evans Redding</div>
+      <div class="members">
+        <div class="member">Chris Hamilton</div>
+        <div class="member">Zach Redburn</div>
+        <div class="member">Payton Williams</div>
+        <div class="member">Michael Woody</div>
+        <div class="member">Kile Yarberry</div>
+      </div>
+    </div>
+    <div class="team-card tc-ops">
+      <h3>Tower & Infra Ops &mdash; E8-AtLink</h3>
+      <div class="role">Director: Jerry Stone</div>
+      <div class="members">
+        <div class="member">Jason Bohannon</div>
+        <div class="member">Eric Short</div>
+      </div>
+    </div>
+    <div class="team-card tc-ops">
+      <h3>Field Operations &mdash; WeLink</h3>
+      <div class="role">Director: Eric Winn</div>
+      <div class="members">
+        <div class="member">Sophia Gomez</div>
+        <div class="member">Sara Warrick</div>
+        <div class="member">Kirk Marcroft</div>
+        <div class="member">Bryan Jones</div>
+        <div class="member">Jarrod Rogers</div>
+        <div class="member">Brandon White</div>
+        <div class="member">Justin Silva</div>
+        <div class="member">Cyle Cope</div>
+        <div class="member">Cole Nichols</div>
+        <div class="member">Kyle Gregory</div>
+        <div class="member">Raymond Gholar</div>
+        <div class="member">Deon Herrera</div>
+        <div class="member">Cody Carlson</div>
+        <div class="member">Ray Melton</div>
+        <div class="member">Joseph Hylka</div>
+        <div class="member">Kary Kleman</div>
+      </div>
+    </div>
+    <div class="team-card tc-ops">
+      <h3>Field Operations &mdash; E8-AtLink</h3>
+      <div class="role">Director: Jacob Gilbert</div>
+      <div class="members">
+        <div class="member">Matt Booth &mdash; Supervisor</div>
+        <div class="member">Ted Martin &mdash; Supervisor</div>
+        <div class="member">Adam Blackburn</div>
+        <div class="member">James Blaser</div>
+        <div class="member">Justin Cowen</div>
+        <div class="member">Zech Howry</div>
+        <div class="member">Myron McDonald</div>
+        <div class="member">Dolton Thomas</div>
+        <div class="member">Gabriel Alonzo &mdash; TX</div>
+        <div class="member">Sam Hobbs</div>
+        <div class="member">Jamie Jones</div>
+        <div class="member">Shelton McDaniel</div>
+      </div>
+    </div>
+    <div class="team-card tc-ops">
+      <h3>Dispatch &mdash; E8-AtLink</h3>
+      <div class="role">Dispatch Team</div>
+      <div class="members">
+        <div class="member">Meagan Simmons</div>
+        <div class="member">Tiffany Horn</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CUSTOMER SUPPORT -->
+<div class="dept-section">
+  <div class="dept-section-title" style="background: linear-gradient(135deg, rgba(239,68,68,0.12), rgba(239,68,68,0.04));" onclick="toggleSection(this)">
+    <span class="toggle">&#9660;</span>
+    <span style="color:#fca5a5;">Customer Support & Retention</span>
+    <span class="fte-badge">19 <span class="fte-label">FTEs</span></span>
+    <span style="color:#64748b; font-size:12px; font-weight:400; margin-left:auto;">Director: Kelly Lee &rarr; Via Vice COOs &rarr; COO</span>
+  </div>
+  <div class="dept-grid section-body">
+    <div class="team-card tc-support">
+      <h3>Customer Support</h3>
+      <div class="role">Manager: Amanda Brummell</div>
+      <div class="members">
+        <div class="member">Cooper Blackwell</div>
+        <div class="member">Mixli Carr</div>
+        <div class="member">Mya Cook</div>
+        <div class="member">Emily Cordell</div>
+        <div class="member">Hyla Elias</div>
+        <div class="member">Connor Fisher</div>
+        <div class="member">Crysten Gregson</div>
+        <div class="member">Matthew Hernandez</div>
+        <div class="member">Jeffrey Manulanda</div>
+        <div class="member">Hunter Mead</div>
+        <div class="member">Emily Rhodes</div>
+        <div class="member">Luis Rivera</div>
+        <div class="member">Victoria Shatswell</div>
+        <div class="member">Natnanael Valles</div>
+      </div>
+    </div>
+    <div class="team-card tc-support">
+      <h3>Customer Advocacy (CAT)</h3>
+      <div class="role">Lead: Kenya Baker</div>
+      <div class="members">
+        <div class="member">Erin Castleberry</div>
+        <div class="member">Christina Harjo</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WAREHOUSE & LOGISTICS -->
+<div class="dept-section">
+  <div class="dept-section-title" style="background: linear-gradient(135deg, rgba(16,185,129,0.12), rgba(16,185,129,0.04));" onclick="toggleSection(this)">
+    <span class="toggle">&#9660;</span>
+    <span style="color:#6ee7b7;">Warehouse & Logistics</span>
+    <span class="fte-badge">8 <span class="fte-label">FTEs</span></span>
+    <span style="color:#64748b; font-size:12px; font-weight:400; margin-left:auto;">Via Vice COOs &rarr; COO &mdash; Patrick Castleberry</span>
+  </div>
+  <div class="dept-grid section-body">
+    <div class="team-card tc-ops">
+      <h3>Warehouse &mdash; WeLink</h3>
+      <div class="role">Director: Merideth Foard</div>
+      <div class="members">
+        <div class="member">Ricardo Catota</div>
+        <div class="member">Abraham Hernandez</div>
+        <div class="member">Mikey Quinones</div>
+        <div class="member">Jessie Shafer</div>
+      </div>
+    </div>
+    <div class="team-card tc-ops">
+      <h3>Warehouse &mdash; E8-AtLink</h3>
+      <div class="role">Director: Benjamin Dees</div>
+      <div class="members">
+        <div class="member">Summer Fite</div>
+        <div class="member">Shane Revels</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MARKETING -->
+<div class="dept-section">
+  <div class="dept-section-title" style="background: linear-gradient(135deg, rgba(20,184,166,0.12), rgba(20,184,166,0.04));" onclick="toggleSection(this)">
+    <span class="toggle">&#9660;</span>
+    <span style="color:#5eead4;">Marketing</span>
+    <span class="fte-badge">6 <span class="fte-label">FTEs</span></span>
+    <span style="color:#64748b; font-size:12px; font-weight:400; margin-left:auto;">Reports to CRO &mdash; Dennis O'Connell</span>
+  </div>
+  <div class="dept-grid section-body">
+    <div class="team-card tc-marketing">
+      <h3>Marketing &mdash; Director</h3>
+      <div class="role">Director: Brent Greene</div>
+      <div class="members">
+        <div class="member">Whitney Fenzel</div>
+        <div class="member">Jenny Pulido</div>
+      </div>
+    </div>
+    <div class="team-card tc-marketing">
+      <h3>Network Solutions</h3>
+      <div class="role">WeLink Team</div>
+      <div class="members">
+        <div class="member">Matt Angell</div>
+        <div class="member">Jacob Jaeger</div>
+        <div class="member">Angelo Lance</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SALES -->
+<div class="dept-section">
+  <div class="dept-section-title" style="background: linear-gradient(135deg, rgba(245,158,11,0.12), rgba(245,158,11,0.04));" onclick="toggleSection(this)">
+    <span class="toggle">&#9660;</span>
+    <span style="color:#fcd34d;">Sales</span>
+    <span class="fte-badge">27 <span class="fte-label">FTEs</span></span>
+    <span style="color:#64748b; font-size:12px; font-weight:400; margin-left:auto;">Reports to CRO &mdash; Dennis O'Connell</span>
+  </div>
+  <div class="dept-grid section-body">
+    <div class="team-card tc-sales">
+      <h3>Inside Sales &mdash; WeLink</h3>
+      <div class="role">Team</div>
+      <div class="members">
+        <div class="member">Lily Valenzuela</div>
+        <div class="member">Nick Shaffer</div>
+      </div>
+    </div>
+    <div class="team-card tc-sales">
+      <h3>Inside Sales &mdash; AtLink</h3>
+      <div class="role">Team</div>
+      <div class="members">
+        <div class="member">Hannah Cullen</div>
+        <div class="member">Elliott Eyman</div>
+        <div class="member">Nathan Myers</div>
+      </div>
+    </div>
+    <div class="team-card tc-sales">
+      <h3>Field (D2D) Sales &mdash; WeLink</h3>
+      <div class="role">Director: David Criswell</div>
+      <div class="members">
+        <div class="member"><strong>LV Manager:</strong> Josh Kirkpatrick</div>
+        <div class="member" style="padding-left:12px;">Elvis Herrera</div>
+        <div class="member" style="padding-left:12px;">Eric Castillo</div>
+        <div class="member" style="padding-left:12px;">Sergio Chavez</div>
+        <div class="member"><strong>LA Manager:</strong> Erick Gutierrez</div>
+        <div class="member" style="padding-left:12px;">Jesualdo Gonzalez</div>
+        <div class="member" style="padding-left:12px;">Jose Rodriguez</div>
+        <div class="member"><strong>PHX Manager:</strong> Korben White</div>
+        <div class="member" style="padding-left:12px;">Dylan De La Vega Lechuga</div>
+        <div class="member" style="padding-left:12px;">Elio Merida</div>
+        <div class="member" style="padding-left:12px;">Grayson Huxster</div>
+        <div class="member" style="padding-left:12px;">Azan Phoenix</div>
+      </div>
+    </div>
+    <div class="team-card tc-sales">
+      <h3>Field (D2D) Sales &mdash; AtLink</h3>
+      <div class="role">Director: Ed Butker</div>
+      <div class="members">
+        <div class="member"><strong>TX Team:</strong></div>
+        <div class="member" style="padding-left:12px;">John Coelho</div>
+        <div class="member" style="padding-left:12px;">Andy Nimbriotis</div>
+        <div class="member"><strong>OK Team:</strong></div>
+        <div class="member" style="padding-left:12px;">Jeff Horn</div>
+        <div class="member" style="padding-left:12px;">Stephen Gideo</div>
+        <div class="member" style="padding-left:12px;">Kaitlyn Whitson</div>
+        <div class="member" style="padding-left:12px;">Chirs Lewis</div>
+        <div class="member" style="padding-left:12px;">Taryn Hopstein</div>
+        <div class="member" style="padding-left:12px;">James Braggs</div>
+        <div class="member" style="padding-left:12px;">Marin Peoples</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="print-note">E8Topco Organization &middot; Draft &middot; February 26, 2026</div>
+
+<script>
+function toggleSection(el) {
+  const body = el.nextElementSibling;
+  const toggle = el.querySelector('.toggle');
+  if (body.style.display === 'none') {
+    body.style.display = '';
+    toggle.classList.remove('collapsed');
+  } else {
+    body.style.display = 'none';
+    toggle.classList.add('collapsed');
+  }
+}
+</script>
+
+</body>
+</html>
