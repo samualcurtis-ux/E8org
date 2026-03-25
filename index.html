@@ -1,1121 +1,1376 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>E8Topco Organization Chart</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E8Topco Organizational Chart</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
-    color: #e2e8f0;
-    min-height: 100vh;
-    overflow-x: auto;
-  }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            overflow-x: auto;
+        }
 
-  .header {
-    text-align: center;
-    padding: 40px 20px 20px;
-    background: linear-gradient(180deg, rgba(59,130,246,0.12) 0%, transparent 100%);
-  }
-  .header h1 {
-    font-size: 28px;
-    font-weight: 700;
-    background: linear-gradient(135deg, #60a5fa, #a78bfa);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: -0.5px;
-  }
-  .header .subtitle {
-    font-size: 13px;
-    color: #64748b;
-    margin-top: 6px;
-    font-weight: 400;
-  }
+        .header {
+            text-align: center;
+            padding: 40px 20px 20px;
+            background: linear-gradient(180deg, rgba(59,130,246,0.12) 0%, transparent 100%);
+        }
 
-  .legend {
-    display: flex;
-    justify-content: center;
-    gap: 18px;
-    padding: 12px 20px 24px;
-    flex-wrap: wrap;
-  }
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 11px;
-    color: #94a3b8;
-  }
-  .legend-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-  }
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
 
-  .chart-container {
-    padding: 0 30px 60px;
-    overflow-x: auto;
-  }
+        .header .subtitle {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 6px;
+            font-weight: 400;
+        }
 
-  /* Tree layout */
-  .tree { width: max-content; margin: 0 auto; }
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding: 30px 20px;
+            background: linear-gradient(180deg, transparent 0%, rgba(30,41,59,0.5) 100%);
+            border-bottom: 1px solid rgba(148,163,184,0.1);
+        }
 
-  .tree ul {
-    padding-top: 20px;
-    position: relative;
-    transition: all 0.3s;
-    display: flex;
-    justify-content: center;
-    list-style: none;
-  }
+        .stat {
+            text-align: center;
+        }
 
-  .tree li {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    padding: 20px 6px 0;
-  }
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-  /* Connector lines */
-  .tree li::before, .tree li::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    border-top: 2px solid #334155;
-    width: 50%;
-    height: 20px;
-  }
-  .tree li::before { right: 50%; border-right: 2px solid #334155; }
-  .tree li::after { left: 50%; border-left: 2px solid #334155; }
-  .tree li:only-child::before, .tree li:only-child::after { display: none; }
-  .tree li:only-child { padding-top: 0; }
-  .tree li:first-child::before, .tree li:last-child::after { border: 0 none; }
-  .tree li:last-child::before { border-radius: 0 5px 0 0; }
-  .tree li:first-child::after { border-radius: 5px 0 0 0; }
+        .stat-label {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-  .tree ul ul::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 50%;
-    border-left: 2px solid #334155;
-    width: 0;
-    height: 20px;
-  }
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+            background: rgba(15,23,42,0.5);
+            border-bottom: 1px solid rgba(148,163,184,0.1);
+        }
 
-  /* Card styles */
-  .card {
-    position: relative;
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-    border-radius: 12px;
-    padding: 12px 16px;
-    min-width: 140px;
-    max-width: 180px;
-    text-align: center;
-    cursor: default;
-    transition: transform 0.2s, box-shadow 0.2s;
-    border: 1px solid rgba(255,255,255,0.08);
-    backdrop-filter: blur(10px);
-  }
-  .card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-  }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
 
-  .card .name {
-    font-weight: 600;
-    font-size: 12.5px;
-    line-height: 1.3;
-    color: #f1f5f9;
-  }
-  .card .title {
-    font-size: 10px;
-    font-weight: 500;
-    margin-top: 3px;
-    padding: 2px 8px;
-    border-radius: 10px;
-    background: rgba(255,255,255,0.08);
-    color: #94a3b8;
-  }
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
 
-  /* CEO card */
-  .ceo {
-    background: linear-gradient(135deg, #1e3a5f, #1a365d);
-    border-color: #3b82f6;
-    box-shadow: 0 0 20px rgba(59,130,246,0.2);
-    min-width: 200px;
-    padding: 16px 24px;
-  }
-  .ceo .name { font-size: 16px; color: #fff; }
-  .ceo .title { font-size: 12px; background: rgba(59,130,246,0.25); color: #93c5fd; }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
 
-  /* C-suite */
-  .csuite {
-    background: linear-gradient(135deg, #1e293b, #253347);
-    border-color: #6366f1;
-    box-shadow: 0 0 15px rgba(99,102,241,0.15);
-    min-width: 160px;
-  }
-  .csuite .name { font-size: 13px; }
-  .csuite .title { background: rgba(99,102,241,0.2); color: #a5b4fc; }
+        .org-tree {
+            background: rgba(30,41,59,0.4);
+            border: 1px solid rgba(148,163,184,0.1);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+            overflow-x: auto;
+        }
 
-  /* VP level */
-  .vp {
-    background: linear-gradient(135deg, #1a2332, #1e2d3d);
-    border-color: #8b5cf6;
-    box-shadow: 0 0 10px rgba(139,92,246,0.1);
-    min-width: 150px;
-  }
-  .vp .title { background: rgba(139,92,246,0.15); color: #c4b5fd; }
+        .tree-section {
+            margin-bottom: 30px;
+        }
 
-  /* Department colors */
-  .dept-finance { background: linear-gradient(135deg, #1a2636, #1a3040); border-color: #0ea5e9; }
-  .dept-finance .title { background: rgba(14,165,233,0.15); color: #7dd3fc; }
+        .tree-section h2 {
+            font-size: 14px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
 
-  .dept-ops { background: linear-gradient(135deg, #1a2e26, #1a3530); border-color: #10b981; }
-  .dept-ops .title { background: rgba(16,185,129,0.15); color: #6ee7b7; }
+        .tree-row {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
 
-  .dept-tech { background: linear-gradient(135deg, #2a1a36, #301a3a); border-color: #a855f7; }
-  .dept-tech .title { background: rgba(168,85,247,0.15); color: #d8b4fe; }
+        .exec-card {
+            background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(139,92,246,0.1));
+            border: 1px solid rgba(59,130,246,0.3);
+            border-radius: 8px;
+            padding: 16px 20px;
+            text-align: center;
+            min-width: 200px;
+            flex-shrink: 0;
+        }
 
-  .dept-sales { background: linear-gradient(135deg, #2e2a1a, #35301a); border-color: #f59e0b; }
-  .dept-sales .title { background: rgba(245,158,11,0.15); color: #fcd34d; }
+        .exec-card .title {
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-  .dept-support { background: linear-gradient(135deg, #2e1a1a, #351a1a); border-color: #ef4444; }
-  .dept-support .title { background: rgba(239,68,68,0.15); color: #fca5a5; }
+        .exec-card .name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 8px;
+            color: #e2e8f0;
+        }
 
-  .dept-marketing { background: linear-gradient(135deg, #1a2e2e, #1a3535); border-color: #14b8a6; }
-  .dept-marketing .title { background: rgba(20,184,166,0.15); color: #5eead4; }
+        .connector {
+            width: 2px;
+            height: 30px;
+            background: linear-gradient(180deg, rgba(59,130,246,0.4), transparent);
+            margin: -15px auto 0;
+        }
 
-  .dept-field { background: linear-gradient(135deg, #1f2a1a, #253518); border-color: #84cc16; }
-  .dept-field .title { background: rgba(132,204,22,0.15); color: #bef264; }
+        .dept-section {
+            margin: 30px 0;
+            padding: 25px;
+            background: rgba(15,23,42,0.6);
+            border-left: 4px solid #60a5fa;
+            border-radius: 8px;
+        }
 
-  /* Department head cards - larger */
-  .dept-head {
-    min-width: 155px;
-    padding: 14px 16px;
-  }
-  .dept-head .name { font-size: 12px; }
+        .dept-section.finance {
+            border-left-color: #10b981;
+        }
 
-  /* Collapsible sections */
-  .dept-section {
-    margin: 40px 20px;
-  }
+        .dept-section.hr {
+            border-left-color: #f59e0b;
+        }
 
-  .dept-section-title {
-    font-size: 18px;
-    font-weight: 600;
-    padding: 14px 24px;
-    border-radius: 10px;
-    margin-bottom: 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    transition: background 0.2s;
-  }
-  .dept-section-title:hover { filter: brightness(1.1); }
-  .dept-section-title .toggle { font-size: 14px; transition: transform 0.3s; }
-  .dept-section-title .toggle.collapsed { transform: rotate(-90deg); }
-  .fte-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 13px;
-    font-weight: 700;
-    padding: 3px 12px;
-    border-radius: 20px;
-    background: rgba(255,255,255,0.08);
-    color: #e2e8f0;
-    margin-left: 12px;
-    white-space: nowrap;
-  }
-  .fte-badge .fte-label {
-    font-size: 10px;
-    font-weight: 500;
-    color: #94a3b8;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
+        .dept-section.operations {
+            border-left-color: #8b5cf6;
+        }
 
-  .dept-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 16px;
-    padding: 0 10px;
-  }
+        .dept-section.sales {
+            border-left-color: #ef4444;
+        }
 
-  .team-card {
-    border-radius: 12px;
-    padding: 18px;
-    border: 1px solid rgba(255,255,255,0.06);
-    backdrop-filter: blur(10px);
-  }
-  .team-card h3 {
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 4px;
-    color: #f1f5f9;
-  }
-  .team-card .role {
-    font-size: 11px;
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-  }
-  .team-card .members {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .team-card .member {
-    font-size: 12px;
-    color: #94a3b8;
-    padding: 3px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-  }
-  .team-card .member:last-child { border-bottom: none; }
+        .dept-section.marketing {
+            border-left-color: #ec4899;
+        }
 
-  .team-card.tc-finance { background: linear-gradient(135deg, #0c1a2a, #0e2235); border-color: rgba(14,165,233,0.3); }
-  .team-card.tc-finance .role { background: rgba(14,165,233,0.15); color: #7dd3fc; }
-  .team-card.tc-ops { background: linear-gradient(135deg, #0c1f1a, #0e2520); border-color: rgba(16,185,129,0.3); }
-  .team-card.tc-ops .role { background: rgba(16,185,129,0.15); color: #6ee7b7; }
-  .team-card.tc-tech { background: linear-gradient(135deg, #1a0c2a, #1e0e30); border-color: rgba(168,85,247,0.3); }
-  .team-card.tc-tech .role { background: rgba(168,85,247,0.15); color: #d8b4fe; }
-  .team-card.tc-sales { background: linear-gradient(135deg, #1f1a0c, #251e0e); border-color: rgba(245,158,11,0.3); }
-  .team-card.tc-sales .role { background: rgba(245,158,11,0.15); color: #fcd34d; }
-  .team-card.tc-support { background: linear-gradient(135deg, #1f0c0c, #250e0e); border-color: rgba(239,68,68,0.3); }
-  .team-card.tc-support .role { background: rgba(239,68,68,0.15); color: #fca5a5; }
-  .team-card.tc-marketing { background: linear-gradient(135deg, #0c1f1f, #0e2525); border-color: rgba(20,184,166,0.3); }
-  .team-card.tc-marketing .role { background: rgba(20,184,166,0.15); color: #5eead4; }
-  .team-card.tc-field { background: linear-gradient(135deg, #141f0c, #18250e); border-color: rgba(132,204,22,0.3); }
-  .team-card.tc-field .role { background: rgba(132,204,22,0.15); color: #bef264; }
+        .dept-section.tech {
+            border-left-color: #06b6d4;
+        }
 
-  /* Top-level tree */
-  .top-tree {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 0 20px;
-  }
+        .dept-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            user-select: none;
+        }
 
-  .vline {
-    width: 2px;
-    height: 24px;
-    background: #334155;
-  }
+        .dept-header:hover {
+            opacity: 0.8;
+        }
 
-  .hgroup {
-    display: flex;
-    justify-content: center;
-    position: relative;
-    gap: 0;
-  }
-  .hgroup::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: calc(50% - var(--hw));
-    right: calc(50% - var(--hw));
-    height: 2px;
-    background: #334155;
-  }
-  .hgroup > .branch {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 0 10px;
-  }
-  .hgroup > .branch > .vline-down {
-    width: 2px;
-    height: 20px;
-    background: #334155;
-  }
+        .dept-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
 
-  /* Responsive sections */
-  .executive-row {
-    display: flex;
-    justify-content: center;
-    gap: 24px;
-    flex-wrap: wrap;
-    padding: 10px 0;
-  }
+        .dept-subtitle {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
 
-  .exec-branch {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+        .dept-meta {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
 
-  .depts-row {
-    display: flex;
-    justify-content: center;
-    gap: 6px;
-    flex-wrap: wrap;
-    padding: 10px 0;
-    position: relative;
-  }
+        .dept-count {
+            font-size: 13px;
+            color: #94a3b8;
+            background: rgba(100,116,139,0.2);
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
 
-  .dept-branch {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+        .toggle-icon {
+            font-size: 18px;
+            transition: transform 0.3s ease;
+            color: #60a5fa;
+        }
 
-  .connector-h {
-    height: 2px;
-    background: #334155;
-    align-self: stretch;
-    margin: 0 10px;
-  }
+        .toggle-icon.collapsed {
+            transform: rotate(-90deg);
+        }
 
-  .dept-label {
-    font-size: 10px;
-    color: #64748b;
-    text-align: center;
-    max-width: 130px;
-    margin-bottom: 6px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
+        .dept-content {
+            margin-top: 20px;
+            max-height: 1000px;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
 
-  /* Section dividers */
-  .section-divider {
-    border: none;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, #334155, transparent);
-    margin: 40px 60px;
-  }
+        .dept-content.collapsed {
+            max-height: 0;
+            margin-top: 0;
+        }
 
-  .stats-bar {
-    display: flex;
-    justify-content: center;
-    gap: 40px;
-    padding: 20px;
-    flex-wrap: wrap;
-  }
-  .stat {
-    text-align: center;
-  }
-  .stat .num {
-    font-size: 28px;
-    font-weight: 700;
-    background: linear-gradient(135deg, #60a5fa, #a78bfa);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  .stat .label {
-    font-size: 11px;
-    color: #64748b;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-top: 2px;
-  }
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+        }
 
-  .print-note {
-    text-align: center;
-    padding: 20px;
-    font-size: 11px;
-    color: #475569;
-  }
+        .team-card {
+            background: rgba(30,41,59,0.6);
+            border: 1px solid rgba(148,163,184,0.15);
+            border-radius: 6px;
+            padding: 14px;
+            font-size: 13px;
+        }
 
-  @media print {
-    body { background: #fff; color: #1e293b; }
-    .card { border-color: #d1d5db; }
-    .card .name { color: #1e293b; }
-  }
-</style>
+        .team-card .name {
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .team-card .title {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .team-card .team-info {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 6px;
+            font-weight: 400;
+        }
+
+        .simple-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+        }
+
+        .simple-list-item {
+            padding: 10px 12px;
+            background: rgba(30,41,59,0.4);
+            border: 1px solid rgba(148,163,184,0.1);
+            border-radius: 4px;
+            font-size: 13px;
+            color: #e2e8f0;
+        }
+
+        .department-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .summary-table {
+            width: 100%;
+            margin: 30px 0;
+            border-collapse: collapse;
+            background: rgba(30,41,59,0.4);
+            border: 1px solid rgba(148,163,184,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .summary-table thead {
+            background: rgba(59,130,246,0.1);
+            border-bottom: 1px solid rgba(148,163,184,0.2);
+        }
+
+        .summary-table th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .summary-table td {
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #e2e8f0;
+            border-bottom: 1px solid rgba(148,163,184,0.1);
+        }
+
+        .summary-table tr:hover {
+            background: rgba(59,130,246,0.05);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: #64748b;
+            font-size: 12px;
+            border-top: 1px solid rgba(148,163,184,0.1);
+        }
+
+        .branch-header {
+            font-size: 18px;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin: 40px 0 20px 0;
+            padding: 20px;
+            background: rgba(59,130,246,0.1);
+            border-radius: 8px;
+            border-left: 4px solid #60a5fa;
+        }
+
+        .branch-header.operations {
+            border-left-color: #8b5cf6;
+            background: rgba(139,92,246,0.1);
+        }
+
+        .branch-header.sales {
+            border-left-color: #ef4444;
+            background: rgba(239,68,68,0.1);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .stats-bar {
+                gap: 20px;
+            }
+
+            .stat-number {
+                font-size: 24px;
+            }
+
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tree-row {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
 </head>
 <body>
-
-<div class="header">
-  <h1>E8Topco Organization</h1>
-  <div class="subtitle">WeLink &middot; Element8 &middot; AtLink &mdash; Draft of March 19, 2026</div>
-</div>
-
-<div class="legend">
-  <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div> Executive</div>
-  <div class="legend-item"><div class="legend-dot" style="background:#0ea5e9"></div> Finance</div>
-  <div class="legend-item"><div class="legend-dot" style="background:#a855f7"></div> Technology</div>
-  <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div> Operations</div>
-  <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div> Support</div>
-  <div class="legend-item"><div class="legend-dot" style="background:#14b8a6"></div> Marketing</div>
-  <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> Sales</div>
-</div>
-
-<div class="stats-bar">
-  <div class="stat"><div class="num">164</div><div class="label">Total FTEs</div></div>
-  <div class="stat"><div class="num">16</div><div class="label">Departments</div></div>
-  <div class="stat"><div class="num">6</div><div class="label">C-Suite</div></div>
-  <div class="stat"><div class="num">3</div><div class="label">Brands</div></div>
-</div>
-
-<!-- FTE Summary Table -->
-<div style="max-width:720px; margin:0 auto 10px; padding:0 20px;">
-  <div style="border-radius:12px; border:1px solid rgba(255,255,255,0.08); overflow:hidden; backdrop-filter:blur(10px); background:linear-gradient(135deg, rgba(30,41,59,0.8), rgba(15,23,42,0.9));">
-    <table style="width:100%; border-collapse:collapse; font-size:12px;">
-      <thead>
-        <tr style="background:rgba(59,130,246,0.12);">
-          <th style="text-align:left; padding:12px 16px; color:#93c5fd; font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">Department</th>
-          <th style="text-align:right; padding:12px 16px; color:#93c5fd; font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">FTEs</th>
-          <th style="text-align:right; padding:12px 16px; color:#93c5fd; font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">% of Total</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
-          <td style="padding:8px 16px; color:#a5b4fc;">Executive Leadership</td>
-          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">11</td>
-          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">6.7%</td>
-        </tr>
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
-          <td style="padding:8px 16px; color:#7dd3fc;">Finance & Accounting</td>
-          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">8</td>
-          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">4.9%</td>
-        </tr>
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
-          <td style="padding:8px 16px; color:#7dd3fc;">Billing & Collections</td>
-          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">4</td>
-          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">2.4%</td>
-        </tr>
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
-          <td style="padding:8px 16px; color:#7dd3fc;">HR</td>
-          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">1</td>
-          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">0.6%</td>
-        </tr>
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
-          <td style="padding:8px 16px; color:#d8b4fe;">IT & Core Network</td>
-          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">4</td>
-          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">2.4%</td>
-        </tr>
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
-          <td style="padding:8px 16px; color:#d8b4fe;">NOC/WNET, Eng., Planning & ATS</td>
-          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">16</td>
-          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">9.8%</td>
-        </tr>
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
-          <td style="padding:8px 16px; color:#d8b4fe;">WeLink R&D</td>
-          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">3</td>
-          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">1.8%</td>
-        </tr>
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
-          <td style="padding:8px 16px; color:#6ee7b7;">Tower & Infrastructure Ops</td>
-          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">13</td>
-          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">7.9%</td>
-        </tr>
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
-          <td style="padding:8px 16px; color:#6ee7b7;">Field Operations WeLink</td>
-          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">16</td>
-          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">9.8%</td>
-        </tr>
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
-          <td style="padding:8px 16px; color:#6ee7b7;">Field Operations E8-AtLink</td>
-          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">15</td>
-          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">9.1%</td>
-        </tr>
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
-          <td style="padding:8px 16px; color:#fca5a5;">Customer Support & Retention</td>
-          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">19</td>
-          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">11.6%</td>
-        </tr>
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
-          <td style="padding:8px 16px; color:#6ee7b7;">Supply Chain, Warehouse & Logistics</td>
-          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">9</td>
-          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">5.5%</td>
-        </tr>
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
-          <td style="padding:8px 16px; color:#5eead4;">Marketing</td>
-          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">4</td>
-          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">2.4%</td>
-        </tr>
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
-          <td style="padding:8px 16px; color:#fcd34d;">Inside Sales</td>
-          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">5</td>
-          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">3.0%</td>
-        </tr>
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
-          <td style="padding:8px 16px; color:#fcd34d;">WeLink Infrastructure Sales</td>
-          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">5</td>
-          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">3.0%</td>
-        </tr>
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
-          <td style="padding:8px 16px; color:#fcd34d;">Field (D2D) Sales WeLink</td>
-          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">13</td>
-          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">7.9%</td>
-        </tr>
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
-          <td style="padding:8px 16px; color:#fcd34d;">Field (D2D) Sales AtLink</td>
-          <td style="padding:8px 16px; text-align:right; color:#e2e8f0; font-weight:600;">10</td>
-          <td style="padding:8px 16px; text-align:right; color:#94a3b8;">6.1%</td>
-        </tr>
-        <tr style="background:rgba(59,130,246,0.08);">
-          <td style="padding:10px 16px; color:#f1f5f9; font-weight:700;">TOTAL (unique headcount)</td>
-          <td style="padding:10px 16px; text-align:right; color:#f1f5f9; font-weight:700; font-size:14px;">164</td>
-          <td style="padding:10px 16px; text-align:right; color:#f1f5f9; font-weight:700;">100%</td>
-        </tr>
-      </tbody>
-    </table>
-    <div style="padding:8px 16px 10px; font-size:10px; color:#64748b;">* Brittany Blackburn counted in Finance (also assists HR). Jeremy Gaddy counted in IT (also listed in NOC). Kelly Lee counted in Customer Support (also Inside Sales Director). Cyle Cope counted in Field Ops (also in Warehouse). Duplicates removed.</div>
-  </div>
-</div>
-
-<!-- ===== CEO ===== -->
-<div class="top-tree">
-  <div class="card ceo">
-    <div class="name">Samual Curtis</div>
-    <div class="title">Chief Executive Officer</div>
-  </div>
-
-  <div class="vline"></div>
-
-  <!-- CEO Direct Reports: CFO, COO, CTO, CIO, CRO -->
-  <div class="executive-row">
-    <div class="exec-branch">
-      <div class="card csuite">
-        <div class="name">Jason Pierce</div>
-        <div class="title">CFO</div>
-      </div>
-      <div class="vline"></div>
-      <div style="font-size:10px; color:#7dd3fc; text-transform:uppercase; letter-spacing:0.5px; padding:2px 0 6px;">Finance, Billing, HR</div>
-      <div class="fte-badge" style="margin-left:0;">13 <span class="fte-label">FTEs</span></div>
+    <div class="header">
+        <h1>E8Topco Organizational Chart</h1>
+        <div class="subtitle">WeLink • Element8 • AtLink Combined Companies</div>
+        <div class="subtitle">Draft of March 25, 2026</div>
     </div>
 
-    <div class="exec-branch">
-      <div class="card csuite" style="border-color:#10b981; box-shadow:0 0 15px rgba(16,185,129,0.15);">
-        <div class="name">Patrick Castleberry</div>
-        <div class="title" style="background:rgba(16,185,129,0.2); color:#6ee7b7;">COO</div>
-      </div>
-      <div class="vline"></div>
-      <!-- COO Direct Reports: Vice COOs -->
-      <div class="executive-row" style="gap:14px;">
-        <div class="exec-branch">
-          <div class="card vp">
-            <div class="name">Steve Naylor</div>
-            <div class="title">Vice COO, E8-AtLink</div>
-          </div>
-          <div style="font-size:9px; color:#6ee7b7; text-transform:uppercase; letter-spacing:0.5px; padding:4px 0 2px; text-align:center; max-width:160px;">Tower, Field Ops, CS, Warehouse (E8-AtLink)</div>
+    <div class="stats-bar">
+        <div class="stat">
+            <div class="stat-number">274</div>
+            <div class="stat-label">Total FTE</div>
         </div>
-        <div class="exec-branch">
-          <div class="card vp">
-            <div class="name">Stephen Vaca</div>
-            <div class="title">Vice COO, WeLink</div>
-          </div>
-          <div style="font-size:9px; color:#6ee7b7; text-transform:uppercase; letter-spacing:0.5px; padding:4px 0 2px; text-align:center; max-width:160px;">Tower, Field Ops, CS, Warehouse (WeLink)</div>
+        <div class="stat">
+            <div class="stat-number">21</div>
+            <div class="stat-label">Departments</div>
         </div>
-      </div>
-      <div style="font-size:10px; color:#6ee7b7; padding:6px 0 2px;">Operations</div>
-      <div class="fte-badge" style="margin-left:0;">72 <span class="fte-label">FTEs</span></div>
-    </div>
-
-    <div class="exec-branch">
-      <div class="card csuite" style="border-color:#a855f7; box-shadow:0 0 15px rgba(168,85,247,0.15);">
-        <div class="name">Raj Veerappan</div>
-        <div class="title" style="background:rgba(168,85,247,0.2); color:#d8b4fe;">CTO</div>
-      </div>
-      <div class="vline"></div>
-      <div style="font-size:10px; color:#d8b4fe; text-transform:uppercase; letter-spacing:0.5px; padding:2px 0 6px;">IT, NOC, R&D</div>
-      <div class="fte-badge" style="margin-left:0;">23 <span class="fte-label">FTEs</span></div>
-    </div>
-
-    <div class="exec-branch">
-      <div class="card csuite" style="border-color:#a855f7; box-shadow:0 0 15px rgba(168,85,247,0.15);">
-        <div class="name">Jason Jensen</div>
-        <div class="title" style="background:rgba(168,85,247,0.2); color:#d8b4fe;">CIO</div>
-      </div>
-      <div class="vline"></div>
-      <div style="font-size:10px; color:#d8b4fe; text-transform:uppercase; letter-spacing:0.5px; padding:2px 0 6px;">Core Network</div>
-    </div>
-
-    <div class="exec-branch">
-      <div class="card csuite" style="border-color:#f59e0b; box-shadow:0 0 15px rgba(245,158,11,0.15);">
-        <div class="name">Dennis O'Connell</div>
-        <div class="title" style="background:rgba(245,158,11,0.2); color:#fcd34d;">CRO</div>
-      </div>
-      <div class="vline"></div>
-      <!-- CRO Direct Reports -->
-      <div class="executive-row" style="gap:10px;">
-        <div class="exec-branch">
-          <div class="card vp" style="min-width:130px;">
-            <div class="name">Mike Field</div>
-            <div class="title">VP Sales Central & BD</div>
-          </div>
+        <div class="stat">
+            <div class="stat-number">3</div>
+            <div class="stat-label">C-Suite Reports</div>
         </div>
-        <div class="exec-branch">
-          <div class="card vp" style="min-width:130px;">
-            <div class="name">David Criswell</div>
-            <div class="title">VP Sales West</div>
-          </div>
+    </div>
+
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #10b981;"></div>
+            <span>Finance & Accounting</span>
         </div>
-        <div class="exec-branch">
-          <div class="card vp" style="min-width:130px;">
-            <div class="name">Jonathan Van</div>
-            <div class="title">E8/AtLink JV Mgr</div>
-          </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #f59e0b;"></div>
+            <span>HR</span>
         </div>
-      </div>
-      <div style="font-size:10px; color:#fcd34d; padding:6px 0 2px;">Marketing & Sales</div>
-      <div class="fte-badge" style="margin-left:0;">37 <span class="fte-label">FTEs</span></div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #8b5cf6;"></div>
+            <span>Operations</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #06b6d4;"></div>
+            <span>Technology</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #ef4444;"></div>
+            <span>Sales</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #ec4899;"></div>
+            <span>Marketing</span>
+        </div>
     </div>
-  </div>
-</div>
 
-<hr class="section-divider">
+    <div class="container">
+        <!-- Executive Structure -->
+        <div class="org-tree">
+            <div class="tree-section">
+                <h2>Executive Leadership</h2>
+                <div class="tree-row" style="justify-content: center;">
+                    <div class="exec-card" style="border-color: rgba(236,72,153,0.4); background: linear-gradient(135deg, rgba(236,72,153,0.1), rgba(236,72,153,0.05));">
+                        <div class="title">CEO</div>
+                        <div class="name">Samual Curtis</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 20px 0;">
+                    <div class="connector"></div>
+                </div>
+                <div class="tree-row" style="justify-content: center;">
+                    <div class="exec-card" style="border-color: rgba(16,185,129,0.4); background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(16,185,129,0.05));">
+                        <div class="title">CFO</div>
+                        <div class="name">Jason Pierce</div>
+                    </div>
+                    <div class="exec-card" style="border-color: rgba(139,92,246,0.4); background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(139,92,246,0.05));">
+                        <div class="title">EVP Operations & General Counsel</div>
+                        <div class="name">Patrick Castleberry</div>
+                    </div>
+                    <div class="exec-card" style="border-color: rgba(239,68,68,0.4); background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(239,68,68,0.05));">
+                        <div class="title">CRO</div>
+                        <div class="name">Dennis O'Connell</div>
+                    </div>
+                </div>
+            </div>
 
-<!-- ===== DEPARTMENT SECTIONS ===== -->
+            <div class="tree-section" style="margin-top: 40px;">
+                <h2>Operations Leadership (Reports to EVP Castleberry)</h2>
+                <div class="tree-row" style="justify-content: center;">
+                    <div class="exec-card" style="border-color: rgba(139,92,246,0.4); background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(139,92,246,0.05));">
+                        <div class="title">VP Operations - E8-AtLink</div>
+                        <div class="name">Steven Naylor</div>
+                    </div>
+                    <div class="exec-card" style="border-color: rgba(139,92,246,0.4); background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(139,92,246,0.05));">
+                        <div class="title">SVP Network Engineering & Operations - WeLink</div>
+                        <div class="name">Stephen Vaca</div>
+                    </div>
+                </div>
+            </div>
 
-<!-- FINANCE & ACCOUNTING -->
-<div class="dept-section">
-  <div class="dept-section-title" style="background: linear-gradient(135deg, rgba(14,165,233,0.12), rgba(14,165,233,0.04));" onclick="toggleSection(this)">
-    <span class="toggle">&#9660;</span>
-    <span style="color:#7dd3fc;">Finance, Billing & HR</span>
-    <span class="fte-badge">13 <span class="fte-label">FTEs</span></span>
-    <span style="color:#64748b; font-size:12px; font-weight:400; margin-left:auto;">Reports to CFO &mdash; Jason Pierce</span>
-  </div>
-  <div class="dept-grid section-body">
-    <div class="team-card tc-finance">
-      <h3>Finance & Accounting &mdash; WeLink</h3>
-      <div class="role">Finance Team</div>
-      <div class="members">
-        <div class="member">James Hillstead</div>
-        <div class="member">Zayda Hepworth</div>
-        <div class="member">John Veloz</div>
-        <div class="member">Karli McDonnel</div>
-        <div class="member">Josh Orozco</div>
-      </div>
-    </div>
-    <div class="team-card tc-finance">
-      <h3>Finance & Accounting &mdash; AtLink</h3>
-      <div class="role">Finance Team</div>
-      <div class="members">
-        <div class="member">Brittany Blackburn</div>
-        <div class="member">Lila Crossfield</div>
-        <div class="member">Ben Aceves</div>
-      </div>
-    </div>
-    <div class="team-card tc-finance">
-      <h3>Billing & Collections &mdash; WeLink</h3>
-      <div class="role">Billing Team</div>
-      <div class="members">
-        <div class="member">Hailen Paukert</div>
-        <div class="member">Gabriela Medina</div>
-      </div>
-    </div>
-    <div class="team-card tc-finance">
-      <h3>Billing & Collections &mdash; E8/AtLink</h3>
-      <div class="role">Billing Team</div>
-      <div class="members">
-        <div class="member">Diana Bast</div>
-        <div class="member">Ashlyn Booth</div>
-      </div>
-    </div>
-    <div class="team-card tc-finance">
-      <h3>Human Resources</h3>
-      <div class="role">Director</div>
-      <div class="members">
-        <div class="member">Sheena LeMaster &mdash; Director</div>
-        <div class="member">Brittany Blackburn &mdash; E8-AtLink Asst.</div>
-      </div>
-    </div>
-  </div>
-</div>
+            <div class="tree-section" style="margin-top: 40px;">
+                <h2>Sales Leadership (Reports to CRO O'Connell)</h2>
+                <div class="tree-row" style="justify-content: center;">
+                    <div class="exec-card" style="border-color: rgba(239,68,68,0.4); background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(239,68,68,0.05));">
+                        <div class="title">VP Sales West</div>
+                        <div class="name">David Criswell</div>
+                    </div>
+                    <div class="exec-card" style="border-color: rgba(239,68,68,0.4); background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(239,68,68,0.05));">
+                        <div class="title">VP D2D Sales</div>
+                        <div class="name">Ed Butker</div>
+                    </div>
+                    <div class="exec-card" style="border-color: rgba(239,68,68,0.4); background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(239,68,68,0.05));">
+                        <div class="title">VP Sales Central</div>
+                        <div class="name">Mike Field</div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<!-- TECHNOLOGY -->
-<div class="dept-section">
-  <div class="dept-section-title" style="background: linear-gradient(135deg, rgba(168,85,247,0.12), rgba(168,85,247,0.04));" onclick="toggleSection(this)">
-    <span class="toggle">&#9660;</span>
-    <span style="color:#d8b4fe;">Technology & Network</span>
-    <span class="fte-badge">23 <span class="fte-label">FTEs</span></span>
-    <span style="color:#64748b; font-size:12px; font-weight:400; margin-left:auto;">Reports to CTO &mdash; Raj Veerappan &amp; CIO &mdash; Jason Jensen (both report to CEO)</span>
-  </div>
-  <div class="dept-grid section-body">
-    <div class="team-card tc-tech">
-      <h3>IT & Core Network &mdash; WeLink</h3>
-      <div class="role">CIO: Jason Jensen</div>
-      <div class="members">
-        <div class="member">Jeff Hall</div>
-        <div class="member">Josh Falcon</div>
-      </div>
-    </div>
-    <div class="team-card tc-tech">
-      <h3>IT & Core Network &mdash; E8-AtLink</h3>
-      <div class="role">Network Team</div>
-      <div class="members">
-        <div class="member">Bob Hansen</div>
-        <div class="member">Jeremy Gaddy</div>
-      </div>
-    </div>
-    <div class="team-card tc-tech">
-      <h3>WeLink R&D</h3>
-      <div class="role">Director: Julius Žaromskis</div>
-      <div class="members">
-        <div class="member">Clinton Andrews</div>
-        <div class="member">Chris O'Toole</div>
-      </div>
-    </div>
-    <div class="team-card tc-tech">
-      <h3>NOC &mdash; WeLink</h3>
-      <div class="role">Director: Trevor Roundy</div>
-      <div class="members">
-        <div class="member">Chris Gruttke</div>
-        <div class="member">Kevin Brayton</div>
-        <div class="member">David Maack</div>
-        <div class="member">Adam Barter</div>
-        <div class="member">Ashley Juric</div>
-        <div class="member">Casey Plouffe</div>
-        <div class="member">Collin Ashaugh</div>
-        <div class="member">Astrid Perez</div>
-      </div>
-    </div>
-    <div class="team-card tc-tech">
-      <h3>NOC &mdash; E8-AtLink</h3>
-      <div class="role">Director: Josh Rudrow</div>
-      <div class="members">
-        <div class="member">Richard Adams</div>
-        <div class="member">Josh Schoenecker</div>
-        <div class="member">Chris Marshall</div>
-        <div class="member">Josh Bell</div>
-      </div>
-    </div>
-    <div class="team-card tc-tech">
-      <h3>Advanced Tech Support (ATS)</h3>
-      <div class="role">ATS Team</div>
-      <div class="members">
-        <div class="member">Preston Bird</div>
-        <div class="member">Logan Cross</div>
-      </div>
-    </div>
-  </div>
-</div>
+        <!-- CFO Branch Departments -->
+        <h2 class="branch-header">CFO Branch — Jason Pierce</h2>
 
-<!-- OPERATIONS -->
-<div class="dept-section">
-  <div class="dept-section-title" style="background: linear-gradient(135deg, rgba(16,185,129,0.12), rgba(16,185,129,0.04));" onclick="toggleSection(this)">
-    <span class="toggle">&#9660;</span>
-    <span style="color:#6ee7b7;">Tower & Field Operations</span>
-    <span class="fte-badge">44 <span class="fte-label">FTEs</span></span>
-    <span style="color:#64748b; font-size:12px; font-weight:400; margin-left:auto;">Via Vice COOs (Naylor &amp; Vaca) &rarr; COO &mdash; Patrick Castleberry</span>
-  </div>
-  <div class="dept-grid section-body">
-    <div class="team-card tc-ops">
-      <h3>Tower & Infra Ops &mdash; WeLink</h3>
-      <div class="role">Director: Eric Winn</div>
-      <div class="members">
-        <div class="member">Christopher Wilcox</div>
-        <div class="member">Chad Allred</div>
-      </div>
-    </div>
-    <div class="team-card tc-ops">
-      <h3>Tower & Infra Ops &mdash; E8-AtLink</h3>
-      <div class="role">Director: Jerry Stone</div>
-      <div class="members">
-        <div class="member">Evans Redding &mdash; Tower Crew Leader</div>
-        <div class="member">Chris Hamilton</div>
-        <div class="member">Zach Redburn</div>
-        <div class="member">Payton Williams</div>
-        <div class="member">Michael Woody</div>
-        <div class="member">Kile Yarberry</div>
-        <div class="member">Jason Bohannon &mdash; Infra Crew</div>
-        <div class="member">Eric Short</div>
-      </div>
-    </div>
-    <div class="team-card tc-ops">
-      <h3>Field Operations &mdash; WeLink</h3>
-      <div class="role">Director: Brandon White</div>
-      <div class="members">
-        <div class="member"><strong>Field Crew West:</strong></div>
-        <div class="member" style="padding-left:12px;">Sophia Gomez</div>
-        <div class="member" style="padding-left:12px;">Sara Warrick</div>
-        <div class="member" style="padding-left:12px;">Kirk Marcroft</div>
-        <div class="member" style="padding-left:12px;">Bryan Jones</div>
-        <div class="member" style="padding-left:12px;">Jarrod Rogers</div>
-        <div class="member" style="padding-left:12px;">Justin Silva</div>
-        <div class="member" style="padding-left:12px;">Cole Nichols</div>
-        <div class="member" style="padding-left:12px;">Kyle Gregory</div>
-        <div class="member" style="padding-left:12px;">Raymond Gholar</div>
-        <div class="member" style="padding-left:12px;">Deon Herrera</div>
-        <div class="member" style="padding-left:12px;">Cody Carlson</div>
-        <div class="member" style="padding-left:12px;">Ray Melton</div>
-        <div class="member" style="padding-left:12px;">Joseph Hylka</div>
-        <div class="member" style="padding-left:12px;">Kary Kleman</div>
-        <div class="member"><strong>Field Crew Texas:</strong></div>
-        <div class="member" style="padding-left:12px;">Cyle Cope</div>
-      </div>
-    </div>
-    <div class="team-card tc-ops">
-      <h3>Field Operations &mdash; E8-AtLink</h3>
-      <div class="role">Director: Jacob Gilbert</div>
-      <div class="members">
-        <div class="member">Matt Booth &mdash; Supervisor</div>
-        <div class="member">Ted Martin &mdash; Supervisor</div>
-        <div class="member"><strong>Field Crew OK:</strong></div>
-        <div class="member" style="padding-left:12px;">Adam Blackburn</div>
-        <div class="member" style="padding-left:12px;">James Blaser</div>
-        <div class="member" style="padding-left:12px;">Justin Cowen</div>
-        <div class="member" style="padding-left:12px;">Zech Howry</div>
-        <div class="member" style="padding-left:12px;">Myron McDonald</div>
-        <div class="member" style="padding-left:12px;">Dolton Thomas</div>
-        <div class="member"><strong>Field Crew TX:</strong></div>
-        <div class="member" style="padding-left:12px;">Gabriel Alonzo</div>
-        <div class="member" style="padding-left:12px;">Sam Hobbs</div>
-        <div class="member" style="padding-left:12px;">Jamie Jones</div>
-        <div class="member" style="padding-left:12px;">Shelton McDaniel</div>
-        <div class="member"><strong>Dispatch:</strong></div>
-        <div class="member" style="padding-left:12px;">Meagan Simmons</div>
-        <div class="member" style="padding-left:12px;">Tiffany Horn</div>
-      </div>
-    </div>
-  </div>
-</div>
+        <div class="dept-section finance">
+            <div class="dept-header" onclick="toggleDept(this)">
+                <div>
+                    <div class="dept-title">Finance & Accounting — WeLink</div>
+                </div>
+                <div class="dept-meta">
+                    <span class="dept-count">5 FTE</span>
+                    <span class="toggle-icon">▶</span>
+                </div>
+            </div>
+            <div class="dept-content">
+                <div class="simple-list">
+                    <div class="simple-list-item">James Hillstead</div>
+                    <div class="simple-list-item">Zayda Hepworth</div>
+                    <div class="simple-list-item">John Veloz</div>
+                    <div class="simple-list-item">Karli McDonnel</div>
+                    <div class="simple-list-item">Josh Orozco</div>
+                </div>
+            </div>
+        </div>
 
-<!-- CUSTOMER SUPPORT -->
-<div class="dept-section">
-  <div class="dept-section-title" style="background: linear-gradient(135deg, rgba(239,68,68,0.12), rgba(239,68,68,0.04));" onclick="toggleSection(this)">
-    <span class="toggle">&#9660;</span>
-    <span style="color:#fca5a5;">Customer Support & Retention</span>
-    <span class="fte-badge">19 <span class="fte-label">FTEs</span></span>
-    <span style="color:#64748b; font-size:12px; font-weight:400; margin-left:auto;">Director: Kelly Lee &rarr; Via Vice COOs &rarr; COO</span>
-  </div>
-  <div class="dept-grid section-body">
-    <div class="team-card tc-support">
-      <h3>CSR Team</h3>
-      <div class="role">Manager: Amanda Brummell</div>
-      <div class="members">
-        <div class="member">Cooper Blackwell</div>
-        <div class="member">Mixli Carr</div>
-        <div class="member">Mya Cook</div>
-        <div class="member">Emily Cordell</div>
-        <div class="member">Hyla Elias</div>
-        <div class="member">Connor Fisher</div>
-        <div class="member">Crysten Gregson</div>
-        <div class="member">Matthew Hernandez</div>
-        <div class="member">Jeffrey Manulanda</div>
-        <div class="member">Hunter Mead</div>
-        <div class="member">Emily Rhodes</div>
-        <div class="member">Luis Rivera</div>
-        <div class="member">Victoria Shatswell</div>
-        <div class="member">Natnanael Valles</div>
-      </div>
-    </div>
-    <div class="team-card tc-support">
-      <h3>Customer Advocacy (CAT)</h3>
-      <div class="role">Lead: Kenya Baker</div>
-      <div class="members">
-        <div class="member">Erin Castleberry</div>
-        <div class="member">Christina Harjo</div>
-      </div>
-    </div>
-  </div>
-</div>
+        <div class="dept-section finance">
+            <div class="dept-header" onclick="toggleDept(this)">
+                <div>
+                    <div class="dept-title">Finance & Accounting — AtLink</div>
+                </div>
+                <div class="dept-meta">
+                    <span class="dept-count">3 FTE</span>
+                    <span class="toggle-icon">▶</span>
+                </div>
+            </div>
+            <div class="dept-content">
+                <div class="simple-list">
+                    <div class="simple-list-item">Brittany Blackburn</div>
+                    <div class="simple-list-item">Lila Crossfield</div>
+                    <div class="simple-list-item">Ben Aceves</div>
+                </div>
+            </div>
+        </div>
 
-<!-- SUPPLY CHAIN, WAREHOUSE & LOGISTICS -->
-<div class="dept-section">
-  <div class="dept-section-title" style="background: linear-gradient(135deg, rgba(16,185,129,0.12), rgba(16,185,129,0.04));" onclick="toggleSection(this)">
-    <span class="toggle">&#9660;</span>
-    <span style="color:#6ee7b7;">Supply Chain, Warehouse & Logistics</span>
-    <span class="fte-badge">9 <span class="fte-label">FTEs</span></span>
-    <span style="color:#64748b; font-size:12px; font-weight:400; margin-left:auto;">Via Vice COOs &rarr; COO &mdash; Patrick Castleberry</span>
-  </div>
-  <div class="dept-grid section-body">
-    <div class="team-card tc-ops">
-      <h3>Supply Chain & Warehouse &mdash; WeLink</h3>
-      <div class="role">Director: Merideth Foard</div>
-      <div class="members">
-        <div class="member">Ricardo Catota</div>
-        <div class="member">Cyle Cope</div>
-        <div class="member">Abraham Hernandez</div>
-        <div class="member">Mikey Quinones</div>
-        <div class="member">Jessie Shafer</div>
-      </div>
-    </div>
-    <div class="team-card tc-ops">
-      <h3>Supply Chain & Warehouse &mdash; E8-AtLink</h3>
-      <div class="role">Director: Benjamin Dees</div>
-      <div class="members">
-        <div class="member">Summer Fite</div>
-        <div class="member">Shane Revels</div>
-      </div>
-    </div>
-  </div>
-</div>
+        <div class="dept-section finance">
+            <div class="dept-header" onclick="toggleDept(this)">
+                <div>
+                    <div class="dept-title">Billing & Collections — WeLink</div>
+                </div>
+                <div class="dept-meta">
+                    <span class="dept-count">2 FTE</span>
+                    <span class="toggle-icon">▶</span>
+                </div>
+            </div>
+            <div class="dept-content">
+                <div class="simple-list">
+                    <div class="simple-list-item">Hailen Paukert</div>
+                    <div class="simple-list-item">Gabriela Medina</div>
+                </div>
+            </div>
+        </div>
 
-<!-- MARKETING -->
-<div class="dept-section">
-  <div class="dept-section-title" style="background: linear-gradient(135deg, rgba(20,184,166,0.12), rgba(20,184,166,0.04));" onclick="toggleSection(this)">
-    <span class="toggle">&#9660;</span>
-    <span style="color:#5eead4;">Marketing</span>
-    <span class="fte-badge">4 <span class="fte-label">FTEs</span></span>
-    <span style="color:#64748b; font-size:12px; font-weight:400; margin-left:auto;">Reports to CRO &mdash; Dennis O'Connell</span>
-  </div>
-  <div class="dept-grid section-body">
-    <div class="team-card tc-marketing">
-      <h3>Marketing</h3>
-      <div class="role">Director: Brent Greene</div>
-      <div class="members">
-        <div class="member">Whitney Fenzel &mdash; VP of Marketing</div>
-        <div class="member">Jenny Pulido &mdash; Asst. VP Marketing</div>
-      </div>
-    </div>
-  </div>
-</div>
+        <div class="dept-section finance">
+            <div class="dept-header" onclick="toggleDept(this)">
+                <div>
+                    <div class="dept-title">Billing & Collections — E8-AtLink</div>
+                </div>
+                <div class="dept-meta">
+                    <span class="dept-count">3 FTE</span>
+                    <span class="toggle-icon">▶</span>
+                </div>
+            </div>
+            <div class="dept-content">
+                <div class="simple-list">
+                    <div class="simple-list-item">Diana Bast</div>
+                    <div class="simple-list-item">Ashlyn Booth</div>
+                    <div class="simple-list-item">Bob Hansen</div>
+                </div>
+            </div>
+        </div>
 
-<!-- INSIDE SALES -->
-<div class="dept-section">
-  <div class="dept-section-title" style="background: linear-gradient(135deg, rgba(245,158,11,0.12), rgba(245,158,11,0.04));" onclick="toggleSection(this)">
-    <span class="toggle">&#9660;</span>
-    <span style="color:#fcd34d;">Inside Sales</span>
-    <span class="fte-badge">5 <span class="fte-label">FTEs</span></span>
-    <span style="color:#64748b; font-size:12px; font-weight:400; margin-left:auto;">Director: Kelly Lee &rarr; Reports to CRO &mdash; Dennis O'Connell</span>
-  </div>
-  <div class="dept-grid section-body">
-    <div class="team-card tc-sales">
-      <h3>Inside Sales &mdash; WeLink</h3>
-      <div class="role">WeLink ISRs</div>
-      <div class="members">
-        <div class="member">Lily Valenzuela</div>
-        <div class="member">Nick Shaffer</div>
-      </div>
-    </div>
-    <div class="team-card tc-sales">
-      <h3>Inside Sales &mdash; AtLink</h3>
-      <div class="role">AtLink ISRs</div>
-      <div class="members">
-        <div class="member">Hannah Cullen</div>
-        <div class="member">Elliott Eyman</div>
-        <div class="member">Nathan Myers</div>
-      </div>
-    </div>
-  </div>
-</div>
+        <div class="dept-section hr">
+            <div class="dept-header" onclick="toggleDept(this)">
+                <div>
+                    <div class="dept-title">Human Resources</div>
+                </div>
+                <div class="dept-meta">
+                    <span class="dept-count">2 FTE</span>
+                    <span class="toggle-icon">▶</span>
+                </div>
+            </div>
+            <div class="dept-content">
+                <div class="simple-list">
+                    <div class="simple-list-item"><strong>Director:</strong> Sheena LeMaster</div>
+                    <div class="simple-list-item"><strong>E8-AtLink HR Assistant:</strong> Brittany Blackburn</div>
+                </div>
+            </div>
+        </div>
 
-<!-- WELINK INFRASTRUCTURE SALES -->
-<div class="dept-section">
-  <div class="dept-section-title" style="background: linear-gradient(135deg, rgba(245,158,11,0.12), rgba(245,158,11,0.04));" onclick="toggleSection(this)">
-    <span class="toggle">&#9660;</span>
-    <span style="color:#fcd34d;">WeLink Infrastructure Sales</span>
-    <span class="fte-badge">5 <span class="fte-label">FTEs</span></span>
-    <span style="color:#64748b; font-size:12px; font-weight:400; margin-left:auto;">Director: Matt Angell &rarr; Reports to CRO &mdash; Dennis O'Connell</span>
-  </div>
-  <div class="dept-grid section-body">
-    <div class="team-card tc-sales">
-      <h3>Infrastructure Sales Team</h3>
-      <div class="role">Sales Reps</div>
-      <div class="members">
-        <div class="member">Sergio Chavez</div>
-        <div class="member">Grayson Huxster</div>
-        <div class="member">Azan Phoenix</div>
-      </div>
-    </div>
-    <div class="team-card tc-sales">
-      <h3>Network Solutions</h3>
-      <div class="role">Network Solutions Team</div>
-      <div class="members">
-        <div class="member">Jacob Jaeger</div>
-        <div class="member">Angelo Lance</div>
-      </div>
-    </div>
-  </div>
-</div>
+        <!-- EVP Operations Branch — E8-AtLink Side -->
+        <h2 class="branch-header operations">EVP Operations — E8-AtLink Side (Steven Naylor)</h2>
 
-<!-- FIELD (D2D) SALES WELINK -->
-<div class="dept-section">
-  <div class="dept-section-title" style="background: linear-gradient(135deg, rgba(245,158,11,0.12), rgba(245,158,11,0.04));" onclick="toggleSection(this)">
-    <span class="toggle">&#9660;</span>
-    <span style="color:#fcd34d;">Field (D2D) Sales WeLink</span>
-    <span class="fte-badge">13 <span class="fte-label">FTEs</span></span>
-    <span style="color:#64748b; font-size:12px; font-weight:400; margin-left:auto;">VP Sales West: David Criswell &rarr; Reports to CRO &mdash; Dennis O'Connell</span>
-  </div>
-  <div class="dept-grid section-body">
-    <div class="team-card tc-sales">
-      <h3>LVG Leaf Sales</h3>
-      <div class="role">Sales Manager: Josh Kirkpatrick</div>
-      <div class="members">
-        <div class="member">Mike Beaver</div>
-        <div class="member">Anthony Biondi</div>
-        <div class="member">Eric Castillo</div>
-        <div class="member">Elvis Herrera</div>
-        <div class="member">Brandon Kesterson</div>
-        <div class="member">Cameron Kornock</div>
-      </div>
-    </div>
-    <div class="team-card tc-sales">
-      <h3>LA Leaf Sales</h3>
-      <div class="role">Sales Manager: Erick Gutierrez</div>
-      <div class="members">
-        <div class="member">Jesualdo Gonzales</div>
-        <div class="member">Jose Rodriguez</div>
-      </div>
-    </div>
-    <div class="team-card tc-sales">
-      <h3>PHX Leaf Sales</h3>
-      <div class="role">Sales Manager: Korben White</div>
-      <div class="members">
-        <div class="member">Aldo Castro</div>
-        <div class="member">Elio Merida</div>
-        <div class="member">Allen Sahagun</div>
-        <div class="member">Johnny Sorg</div>
-        <div class="member">Dylan De La Vega</div>
-      </div>
-    </div>
-  </div>
-</div>
+        <div class="dept-section tech">
+            <div class="dept-header" onclick="toggleDept(this)">
+                <div>
+                    <div class="dept-title">E8-AtLink-WeLink IT & Core Network</div>
+                    <div class="dept-subtitle">CTO: Raj Veerappan</div>
+                </div>
+                <div class="dept-meta">
+                    <span class="dept-count">5 FTE</span>
+                    <span class="toggle-icon">▶</span>
+                </div>
+            </div>
+            <div class="dept-content">
+                <div style="margin-bottom: 15px;">
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">WeLink</div>
+                    <div class="simple-list">
+                        <div class="simple-list-item">Jeff Hall</div>
+                        <div class="simple-list-item">Josh Falcon</div>
+                    </div>
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">E8-AtLink</div>
+                    <div class="simple-list">
+                        <div class="simple-list-item">Kile Adams</div>
+                        <div class="simple-list-item">Jeremy Gaddy</div>
+                        <div class="simple-list-item">Bob Hansen</div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<!-- FIELD (D2D) SALES ATLINK -->
-<div class="dept-section">
-  <div class="dept-section-title" style="background: linear-gradient(135deg, rgba(245,158,11,0.12), rgba(245,158,11,0.04));" onclick="toggleSection(this)">
-    <span class="toggle">&#9660;</span>
-    <span style="color:#fcd34d;">Field (D2D) Sales AtLink</span>
-    <span class="fte-badge">10 <span class="fte-label">FTEs</span></span>
-    <span style="color:#64748b; font-size:12px; font-weight:400; margin-left:auto;">VP D2D Sales: Ed Butker &rarr; Reports to CRO &mdash; Dennis O'Connell</span>
-  </div>
-  <div class="dept-grid section-body">
-    <div class="team-card tc-sales">
-      <h3>TX D2D Team</h3>
-      <div class="role">Field Sales Team</div>
-      <div class="members">
-        <div class="member">John Coelho</div>
-        <div class="member">Andy Nimbriotis</div>
-      </div>
+        <div class="dept-section operations">
+            <div class="dept-header" onclick="toggleDept(this)">
+                <div>
+                    <div class="dept-title">E8-AtLink-WeLink Customer Support & Retention</div>
+                    <div class="dept-subtitle">Director: Kelly Lee</div>
+                </div>
+                <div class="dept-meta">
+                    <span class="dept-count">18 FTE</span>
+                    <span class="toggle-icon">▶</span>
+                </div>
+            </div>
+            <div class="dept-content">
+                <div style="margin-bottom: 15px;">
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">Manager: Amanda Brummell</div>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">Customer Service Representatives</div>
+                    <div class="simple-list">
+                        <div class="simple-list-item">Cooper Blackwell</div>
+                        <div class="simple-list-item">Mixli Carr</div>
+                        <div class="simple-list-item">Mya Cook</div>
+                        <div class="simple-list-item">Emily Cordell</div>
+                        <div class="simple-list-item">Hyla Elias</div>
+                        <div class="simple-list-item">Connor Fisher</div>
+                        <div class="simple-list-item">Crysten Gregson</div>
+                        <div class="simple-list-item">Matthew Hernandez</div>
+                        <div class="simple-list-item">Jeffrey Manulanda</div>
+                        <div class="simple-list-item">Hunter Mead</div>
+                        <div class="simple-list-item">Emily Rhodes</div>
+                        <div class="simple-list-item">Luis Rivera</div>
+                        <div class="simple-list-item">Victoria Shatswell</div>
+                        <div class="simple-list-item">Natnanael Valles</div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">CAT Team</div>
+                    <div class="simple-list">
+                        <div class="simple-list-item"><strong>Team Lead:</strong> Kenya Baker</div>
+                        <div class="simple-list-item">Erin Castleberry</div>
+                        <div class="simple-list-item">Christina Harjo</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dept-section operations">
+            <div class="dept-header" onclick="toggleDept(this)">
+                <div>
+                    <div class="dept-title">E8-AtLink Warehouse</div>
+                    <div class="dept-subtitle">Director: Benjamin Dees</div>
+                </div>
+                <div class="dept-meta">
+                    <span class="dept-count">2 FTE</span>
+                    <span class="toggle-icon">▶</span>
+                </div>
+            </div>
+            <div class="dept-content">
+                <div class="simple-list">
+                    <div class="simple-list-item">Summer Fite</div>
+                    <div class="simple-list-item">Shane Revels</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dept-section operations">
+            <div class="dept-header" onclick="toggleDept(this)">
+                <div>
+                    <div class="dept-title">E8-AtLink Field Operations</div>
+                    <div class="dept-subtitle">Director: Jacob Gilbert</div>
+                </div>
+                <div class="dept-meta">
+                    <span class="dept-count">15 FTE</span>
+                    <span class="toggle-icon">▶</span>
+                </div>
+            </div>
+            <div class="dept-content">
+                <div style="margin-bottom: 15px;">
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">Field Supervisors</div>
+                    <div class="simple-list">
+                        <div class="simple-list-item">Matt Booth</div>
+                        <div class="simple-list-item">Ted Martin</div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">Field Crew — Oklahoma</div>
+                    <div class="simple-list">
+                        <div class="simple-list-item">Adam Blackburn</div>
+                        <div class="simple-list-item">James Blaser</div>
+                        <div class="simple-list-item">Justin Cowen</div>
+                        <div class="simple-list-item">Zech Howry</div>
+                        <div class="simple-list-item">Myron McDonald</div>
+                        <div class="simple-list-item">Dolton Thomas</div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">Field Crew — Texas</div>
+                    <div class="simple-list">
+                        <div class="simple-list-item">Gabriel Alonzo</div>
+                        <div class="simple-list-item">Sam Hobbs</div>
+                        <div class="simple-list-item">Jamie Jones</div>
+                        <div class="simple-list-item">Shelton McDaniel</div>
+                    </div>
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">Dispatch</div>
+                    <div class="simple-list">
+                        <div class="simple-list-item">Meagan Simmons</div>
+                        <div class="simple-list-item">Tiffany Horn</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dept-section operations">
+            <div class="dept-header" onclick="toggleDept(this)">
+                <div>
+                    <div class="dept-title">E8-AtLink NOC/WNET Engineering, Planning & ATS</div>
+                    <div class="dept-subtitle">Director: Josh Rudrow</div>
+                </div>
+                <div class="dept-meta">
+                    <span class="dept-count">7 FTE</span>
+                    <span class="toggle-icon">▶</span>
+                </div>
+            </div>
+            <div class="dept-content">
+                <div style="margin-bottom: 15px;">
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">NOC Team</div>
+                    <div class="simple-list">
+                        <div class="simple-list-item">Richard Adams</div>
+                        <div class="simple-list-item">Jeremy Gaddy</div>
+                        <div class="simple-list-item">Josh Schoenecker</div>
+                        <div class="simple-list-item">Chris Marshall</div>
+                        <div class="simple-list-item">Josh Bell</div>
+                    </div>
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">Advanced Technical Support</div>
+                    <div class="simple-list">
+                        <div class="simple-list-item">Preston Bird</div>
+                        <div class="simple-list-item">Logan Cross</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dept-section operations">
+            <div class="dept-header" onclick="toggleDept(this)">
+                <div>
+                    <div class="dept-title">E8-AtLink Tower & Infrastructure Operations</div>
+                    <div class="dept-subtitle">Director: Jerry Stone</div>
+                </div>
+                <div class="dept-meta">
+                    <span class="dept-count">8 FTE</span>
+                    <span class="toggle-icon">▶</span>
+                </div>
+            </div>
+            <div class="dept-content">
+                <div style="margin-bottom: 15px;">
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">Tower Operations</div>
+                    <div class="simple-list">
+                        <div class="simple-list-item"><strong>Team Leader:</strong> Evans Redding</div>
+                        <div class="simple-list-item">Chris Hamilton</div>
+                        <div class="simple-list-item">Zach Redburn</div>
+                        <div class="simple-list-item">Payton Williams</div>
+                        <div class="simple-list-item">Michael Woody</div>
+                        <div class="simple-list-item">Kile Yarberry</div>
+                    </div>
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">Infrastructure Crew</div>
+                    <div class="simple-list">
+                        <div class="simple-list-item">Jason Bohannon</div>
+                        <div class="simple-list-item">Eric Short</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- EVP Operations Branch — WeLink Side -->
+        <h2 class="branch-header operations">EVP Operations — WeLink Side (Stephen Vaca)</h2>
+
+        <div class="dept-section operations">
+            <div class="dept-header" onclick="toggleDept(this)">
+                <div>
+                    <div class="dept-title">WeLink Network Operations</div>
+                    <div class="dept-subtitle">Director: Trevor Roundy</div>
+                </div>
+                <div class="dept-meta">
+                    <span class="dept-count">4 FTE</span>
+                    <span class="toggle-icon">▶</span>
+                </div>
+            </div>
+            <div class="dept-content">
+                <div style="margin-bottom: 15px;">
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">Senior NOC Technicians</div>
+                    <div class="simple-list">
+                        <div class="simple-list-item">Collin Ashbaugh</div>
+                        <div class="simple-list-item">Casey Plouffe</div>
+                    </div>
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">NOC Technicians</div>
+                    <div class="simple-list">
+                        <div class="simple-list-item">Rachel Verhoef</div>
+                        <div class="simple-list-item">Anthony Smith</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dept-section tech">
+            <div class="dept-header" onclick="toggleDept(this)">
+                <div>
+                    <div class="dept-title">WeLink Technology Department & R&D</div>
+                    <div class="dept-subtitle">CIO: Jason Jensen</div>
+                </div>
+                <div class="dept-meta">
+                    <span class="dept-count">7 FTE</span>
+                    <span class="toggle-icon">▶</span>
+                </div>
+            </div>
+            <div class="dept-content">
+                <div class="simple-list">
+                    <div class="simple-list-item"><strong>Senior Director of Data and AI Services:</strong> Jeff Hall</div>
+                    <div class="simple-list-item"><strong>IT Lead Cybersecurity:</strong> Josh Falcon</div>
+                    <div class="simple-list-item"><strong>Technology Manager:</strong> Clinton Andrews</div>
+                    <div class="simple-list-item"><strong>R&D Team:</strong> Chris O'Toole, Julius Zaromskis</div>
+                    <div class="simple-list-item"><strong>Billing & Systems Manager:</strong> Bob Hansen</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dept-section operations">
+            <div class="dept-header" onclick="toggleDept(this)">
+                <div>
+                    <div class="dept-title">WeLink Broadband Deployment</div>
+                    <div class="dept-subtitle">Operations Executive: Eric Winn</div>
+                </div>
+                <div class="dept-meta">
+                    <span class="dept-count">14 FTE</span>
+                    <span class="toggle-icon">▶</span>
+                </div>
+            </div>
+            <div class="dept-content">
+                <div style="margin-bottom: 15px;">
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">Network Planning</div>
+                    <div class="simple-list">
+                        <div class="simple-list-item"><strong>Manager:</strong> David Maack</div>
+                        <div class="simple-list-item"><strong>GIS Tech II:</strong> Astrid Perez</div>
+                        <div class="simple-list-item"><strong>GIS Analyst I:</strong> Ashley Juric</div>
+                        <div class="simple-list-item"><strong>GIS Analyst II:</strong> Adam Barter</div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">Fiber Engineering</div>
+                    <div class="simple-list">
+                        <div class="simple-list-item"><strong>Director:</strong> Chris Wilcox</div>
+                        <div class="simple-list-item"><strong>Associate Director:</strong> Chad Allred</div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">Infrastructure & Electrical</div>
+                    <div class="simple-list">
+                        <div class="simple-list-item"><strong>Infrastructure Deployment Manager:</strong> Michael Williams</div>
+                        <div class="simple-list-item"><strong>California Electrical Qualifier:</strong> David Kaufman</div>
+                        <div class="simple-list-item"><strong>Electrical Qualifiers:</strong> Kirk Marcroft, Bryan Jones</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dept-section operations">
+            <div class="dept-header" onclick="toggleDept(this)">
+                <div>
+                    <div class="dept-title">WeLink Field Operations</div>
+                    <div class="dept-subtitle">Director: Brandon White</div>
+                </div>
+                <div class="dept-meta">
+                    <span class="dept-count">15 FTE</span>
+                    <span class="toggle-icon">▶</span>
+                </div>
+            </div>
+            <div class="dept-content">
+                <div style="margin-bottom: 15px;">
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">Los Angeles Leaf</div>
+                    <div class="simple-list">
+                        <div class="simple-list-item"><strong>Field Supervisor:</strong> Jarrod Rogers</div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">Las Vegas Leaf</div>
+                    <div class="simple-list">
+                        <div class="simple-list-item"><strong>Build Foreman:</strong> Cole Nichols</div>
+                        <div class="simple-list-item"><strong>Field Techs:</strong> Kyle Gregory, Raymond Gholar, Deon Herrera, Justin Silva</div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">Phoenix</div>
+                    <div class="simple-list">
+                        <div class="simple-list-item"><strong>Field Manager:</strong> Cody Carlson</div>
+                        <div class="simple-list-item"><strong>Build Foreman:</strong> Ray Melton</div>
+                        <div class="simple-list-item"><strong>Field Tech:</strong> Kary Kleman</div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">Texas</div>
+                    <div class="simple-list">
+                        <div class="simple-list-item">Cyle Cope</div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">Support</div>
+                    <div class="simple-list">
+                        <div class="simple-list-item"><strong>Scheduling Coordinators:</strong> Sophia Gomez, Sara Warrick</div>
+                        <div class="simple-list-item"><strong>Build/MX/Tech:</strong> Joseph Hylka</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dept-section operations">
+            <div class="dept-header" onclick="toggleDept(this)">
+                <div>
+                    <div class="dept-title">WeLink Engineering & Product Development</div>
+                    <div class="dept-subtitle">Director: Michael Maddy</div>
+                </div>
+                <div class="dept-meta">
+                    <span class="dept-count">2 FTE</span>
+                    <span class="toggle-icon">▶</span>
+                </div>
+            </div>
+            <div class="dept-content">
+                <div class="simple-list">
+                    <div class="simple-list-item"><strong>Principal Engineer:</strong> Chris Guttke</div>
+                    <div class="simple-list-item"><strong>SR Network Engineer:</strong> Kevin Brayton</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dept-section operations">
+            <div class="dept-header" onclick="toggleDept(this)">
+                <div>
+                    <div class="dept-title">WeLink Supply Chain, Warehouse & Logistics</div>
+                    <div class="dept-subtitle">Director: Merideth Foard</div>
+                </div>
+                <div class="dept-meta">
+                    <span class="dept-count">5 FTE</span>
+                    <span class="toggle-icon">▶</span>
+                </div>
+            </div>
+            <div class="dept-content">
+                <div class="simple-list">
+                    <div class="simple-list-item">Ricardo Catota</div>
+                    <div class="simple-list-item">Cyle Cope</div>
+                    <div class="simple-list-item">Abraham Hernandez</div>
+                    <div class="simple-list-item">Mikey Quinones</div>
+                    <div class="simple-list-item">Jessie Shafer</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CRO Branch — Sales & Marketing -->
+        <h2 class="branch-header sales">CRO Branch — Dennis O'Connell (Sales & Marketing)</h2>
+
+        <div class="dept-section marketing">
+            <div class="dept-header" onclick="toggleDept(this)">
+                <div>
+                    <div class="dept-title">Marketing</div>
+                    <div class="dept-subtitle">Director: Brent Greene</div>
+                </div>
+                <div class="dept-meta">
+                    <span class="dept-count">3 FTE</span>
+                    <span class="toggle-icon">▶</span>
+                </div>
+            </div>
+            <div class="dept-content">
+                <div class="simple-list">
+                    <div class="simple-list-item"><strong>VP of Marketing:</strong> Whitney Fenzel</div>
+                    <div class="simple-list-item"><strong>Asst. VP Marketing:</strong> Jenny Pulido</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dept-section sales">
+            <div class="dept-header" onclick="toggleDept(this)">
+                <div>
+                    <div class="dept-title">Inside Sales</div>
+                    <div class="dept-subtitle">Director: Kelly Lee</div>
+                </div>
+                <div class="dept-meta">
+                    <span class="dept-count">5 FTE</span>
+                    <span class="toggle-icon">▶</span>
+                </div>
+            </div>
+            <div class="dept-content">
+                <div style="margin-bottom: 15px;">
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">WeLink ISRs</div>
+                    <div class="simple-list">
+                        <div class="simple-list-item">Lily Valenzuela</div>
+                        <div class="simple-list-item">Nick Shaffer</div>
+                    </div>
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">AtLink ISRs</div>
+                    <div class="simple-list">
+                        <div class="simple-list-item">Hannah Cullen</div>
+                        <div class="simple-list-item">Elliott Eyman</div>
+                        <div class="simple-list-item">Nathan Myers</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dept-section sales">
+            <div class="dept-header" onclick="toggleDept(this)">
+                <div>
+                    <div class="dept-title">WeLink Infrastructure Sales</div>
+                    <div class="dept-subtitle">Director: Matt Angell</div>
+                </div>
+                <div class="dept-meta">
+                    <span class="dept-count">5 FTE</span>
+                    <span class="toggle-icon">▶</span>
+                </div>
+            </div>
+            <div class="dept-content">
+                <div style="margin-bottom: 15px;">
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">Sales Representatives</div>
+                    <div class="simple-list">
+                        <div class="simple-list-item">Sergio Chavez</div>
+                        <div class="simple-list-item">Grayson Huxster</div>
+                        <div class="simple-list-item">Azan Phoenix</div>
+                    </div>
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">Network Solutions</div>
+                    <div class="simple-list">
+                        <div class="simple-list-item">Jacob Jaeger</div>
+                        <div class="simple-list-item">Angelo Lance</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dept-section sales">
+            <div class="dept-header" onclick="toggleDept(this)">
+                <div>
+                    <div class="dept-title">WeLink Field, D2D & Commercial Sales</div>
+                    <div class="dept-subtitle">VP Sales West: David Criswell</div>
+                </div>
+                <div class="dept-meta">
+                    <span class="dept-count">17 FTE</span>
+                    <span class="toggle-icon">▶</span>
+                </div>
+            </div>
+            <div class="dept-content">
+                <div style="margin-bottom: 15px;">
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">Las Vegas Leaf Sales</div>
+                    <div class="simple-list">
+                        <div class="simple-list-item"><strong>Manager:</strong> Josh Kirkpatrick</div>
+                        <div class="simple-list-item">Mike Beaver</div>
+                        <div class="simple-list-item">Anthony Biondi</div>
+                        <div class="simple-list-item">Eric Castillo</div>
+                        <div class="simple-list-item">Elvis Herrera</div>
+                        <div class="simple-list-item">Brandon Kesterson</div>
+                        <div class="simple-list-item">Cameron Kornock</div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">Los Angeles Leaf Sales</div>
+                    <div class="simple-list">
+                        <div class="simple-list-item"><strong>Manager:</strong> Erick Gutierrez</div>
+                        <div class="simple-list-item">Jesualdo Gonzales</div>
+                        <div class="simple-list-item">Jose Rodriguez</div>
+                    </div>
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">Phoenix Leaf Sales</div>
+                    <div class="simple-list">
+                        <div class="simple-list-item"><strong>Manager:</strong> Korben White</div>
+                        <div class="simple-list-item">Aldo Castro</div>
+                        <div class="simple-list-item">Elio Merida</div>
+                        <div class="simple-list-item">Allen Sahagun</div>
+                        <div class="simple-list-item">Johnny Sorg</div>
+                        <div class="simple-list-item">Dylan De La Vega</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dept-section sales">
+            <div class="dept-header" onclick="toggleDept(this)">
+                <div>
+                    <div class="dept-title">AtLink Field, D2D & Commercial Sales</div>
+                    <div class="dept-subtitle">VP D2D Sales: Ed Butker</div>
+                </div>
+                <div class="dept-meta">
+                    <span class="dept-count">12 FTE</span>
+                    <span class="toggle-icon">▶</span>
+                </div>
+            </div>
+            <div class="dept-content">
+                <div style="margin-bottom: 15px;">
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">Texas D2D Team</div>
+                    <div class="simple-list">
+                        <div class="simple-list-item">John Coelho</div>
+                        <div class="simple-list-item">Andy Nimbriotis</div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">Oklahoma D2D Team</div>
+                    <div class="simple-list">
+                        <div class="simple-list-item">James Braggs</div>
+                        <div class="simple-list-item">Stephen Gideo</div>
+                        <div class="simple-list-item">Taryn Hopstein</div>
+                        <div class="simple-list-item">Jjeff Horn</div>
+                        <div class="simple-list-item">Chris Lewis</div>
+                        <div class="simple-list-item">Marin Peoples</div>
+                        <div class="simple-list-item">Kaitlyn Whitson</div>
+                    </div>
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">Commercial Sales</div>
+                    <div class="simple-list">
+                        <div class="simple-list-item">Jeff Horn</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dept-section sales">
+            <div class="dept-header" onclick="toggleDept(this)">
+                <div>
+                    <div class="dept-title">E8-AtLink General Sales & Business Development</div>
+                    <div class="dept-subtitle">VP Sales Central: Mike Field</div>
+                </div>
+                <div class="dept-meta">
+                    <span class="dept-count">1 FTE</span>
+                    <span class="toggle-icon">▶</span>
+                </div>
+            </div>
+            <div class="dept-content">
+                <div class="simple-list">
+                    <div class="simple-list-item"><strong>Joint Venture Manager:</strong> Jonathan Van</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Table -->
+        <div style="margin: 50px 0 30px 0;">
+            <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 20px; color: #e2e8f0;">Department Summary</h2>
+            <table class="summary-table">
+                <thead>
+                    <tr>
+                        <th>Department</th>
+                        <th>Reporting Line</th>
+                        <th>Director/Lead</th>
+                        <th>FTE Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Finance & Accounting — WeLink</td>
+                        <td>CFO</td>
+                        <td>Jason Pierce</td>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <td>Finance & Accounting — AtLink</td>
+                        <td>CFO</td>
+                        <td>Jason Pierce</td>
+                        <td>3</td>
+                    </tr>
+                    <tr>
+                        <td>Billing & Collections — WeLink</td>
+                        <td>CFO</td>
+                        <td>Jason Pierce</td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td>Billing & Collections — E8-AtLink</td>
+                        <td>CFO</td>
+                        <td>Jason Pierce</td>
+                        <td>3</td>
+                    </tr>
+                    <tr>
+                        <td>Human Resources</td>
+                        <td>CFO</td>
+                        <td>Sheena LeMaster</td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td>E8-AtLink-WeLink IT & Core Network</td>
+                        <td>EVP Ops (Naylor)</td>
+                        <td>Raj Veerappan</td>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <td>Customer Support & Retention</td>
+                        <td>EVP Ops (Naylor)</td>
+                        <td>Kelly Lee</td>
+                        <td>18</td>
+                    </tr>
+                    <tr>
+                        <td>E8-AtLink Warehouse</td>
+                        <td>EVP Ops (Naylor)</td>
+                        <td>Benjamin Dees</td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td>E8-AtLink Field Operations</td>
+                        <td>EVP Ops (Naylor)</td>
+                        <td>Jacob Gilbert</td>
+                        <td>15</td>
+                    </tr>
+                    <tr>
+                        <td>NOC/WNET Engineering, Planning & ATS</td>
+                        <td>EVP Ops (Naylor)</td>
+                        <td>Josh Rudrow</td>
+                        <td>7</td>
+                    </tr>
+                    <tr>
+                        <td>Tower & Infrastructure Operations</td>
+                        <td>EVP Ops (Naylor)</td>
+                        <td>Jerry Stone</td>
+                        <td>8</td>
+                    </tr>
+                    <tr>
+                        <td>WeLink Network Operations</td>
+                        <td>EVP Ops (Vaca)</td>
+                        <td>Trevor Roundy</td>
+                        <td>4</td>
+                    </tr>
+                    <tr>
+                        <td>WeLink Technology Department & R&D</td>
+                        <td>EVP Ops (Vaca)</td>
+                        <td>Jason Jensen</td>
+                        <td>7</td>
+                    </tr>
+                    <tr>
+                        <td>WeLink Broadband Deployment</td>
+                        <td>EVP Ops (Vaca)</td>
+                        <td>Eric Winn</td>
+                        <td>14</td>
+                    </tr>
+                    <tr>
+                        <td>WeLink Field Operations</td>
+                        <td>EVP Ops (Vaca)</td>
+                        <td>Brandon White</td>
+                        <td>15</td>
+                    </tr>
+                    <tr>
+                        <td>WeLink Engineering & Product Development</td>
+                        <td>EVP Ops (Vaca)</td>
+                        <td>Michael Maddy</td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td>WeLink Supply Chain, Warehouse & Logistics</td>
+                        <td>EVP Ops (Vaca)</td>
+                        <td>Merideth Foard</td>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <td>Marketing</td>
+                        <td>CRO</td>
+                        <td>Brent Greene</td>
+                        <td>3</td>
+                    </tr>
+                    <tr>
+                        <td>Inside Sales</td>
+                        <td>CRO</td>
+                        <td>Kelly Lee</td>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <td>WeLink Infrastructure Sales</td>
+                        <td>CRO</td>
+                        <td>Matt Angell</td>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <td>WeLink Field, D2D & Commercial Sales</td>
+                        <td>CRO (Criswell)</td>
+                        <td>David Criswell</td>
+                        <td>17</td>
+                    </tr>
+                    <tr>
+                        <td>AtLink Field, D2D & Commercial Sales</td>
+                        <td>CRO (Butker)</td>
+                        <td>Ed Butker</td>
+                        <td>12</td>
+                    </tr>
+                    <tr>
+                        <td>E8-AtLink General Sales & Business Development</td>
+                        <td>CRO (Field)</td>
+                        <td>Mike Field</td>
+                        <td>1</td>
+                    </tr>
+                    <tr style="font-weight: 600; background: rgba(59,130,246,0.1);">
+                        <td colspan="3"><strong>TOTAL FTE</strong></td>
+                        <td><strong>274</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
     </div>
-    <div class="team-card tc-sales">
-      <h3>OK D2D Team</h3>
-      <div class="role">Field Sales Team</div>
-      <div class="members">
-        <div class="member">James Braggs</div>
-        <div class="member">Stephen Gideo</div>
-        <div class="member">Taryn Hopstein</div>
-        <div class="member">Jeff Horn</div>
-        <div class="member">Chris Lewis</div>
-        <div class="member">Marin Peoples</div>
-        <div class="member">Kaitlyn Whitson</div>
-      </div>
+
+    <div class="footer">
+        <p>E8Topco Organizational Chart | Draft of March 25, 2026</p>
+        <p>Data compiled from Excel source (Pat Castleberry)</p>
     </div>
-  </div>
-</div>
 
-<div class="print-note">E8Topco Organization &middot; Draft &middot; March 19, 2026</div>
+    <script>
+        function toggleDept(headerElement) {
+            const content = headerElement.nextElementSibling;
+            const toggleIcon = headerElement.querySelector('.toggle-icon');
 
-<script>
-function toggleSection(el) {
-  const body = el.nextElementSibling;
-  const toggle = el.querySelector('.toggle');
-  if (body.style.display === 'none') {
-    body.style.display = '';
-    toggle.classList.remove('collapsed');
-  } else {
-    body.style.display = 'none';
-    toggle.classList.add('collapsed');
-  }
-}
-</script>
+            if (content && content.classList.contains('dept-content')) {
+                content.classList.toggle('collapsed');
+                toggleIcon.classList.toggle('collapsed');
+            }
+        }
 
+        // Initialize all sections as expanded
+        document.addEventListener('DOMContentLoaded', function() {
+            // All sections start expanded, so no need to add collapsed class
+        });
+    </script>
 </body>
 </html>
